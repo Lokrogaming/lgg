@@ -41,6 +41,48 @@ export type Database = {
         }
         Relationships: []
       }
+      purchases: {
+        Row: {
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          item_id: string
+          purchased_at: string | null
+          server_id: string
+        }
+        Insert: {
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          item_id: string
+          purchased_at?: string | null
+          server_id: string
+        }
+        Update: {
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          item_id?: string
+          purchased_at?: string | null
+          server_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchases_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "shop_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchases_server_id_fkey"
+            columns: ["server_id"]
+            isOneToOne: false
+            referencedRelation: "servers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       server_joins: {
         Row: {
           id: string
@@ -70,20 +112,54 @@ export type Database = {
           },
         ]
       }
+      server_votes: {
+        Row: {
+          id: string
+          server_id: string
+          user_id: string
+          voted_at: string | null
+        }
+        Insert: {
+          id?: string
+          server_id: string
+          user_id: string
+          voted_at?: string | null
+        }
+        Update: {
+          id?: string
+          server_id?: string
+          user_id?: string
+          voted_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "server_votes_server_id_fkey"
+            columns: ["server_id"]
+            isOneToOne: false
+            referencedRelation: "servers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       servers: {
         Row: {
           age_rating: Database["public"]["Enums"]["age_rating"] | null
           ai_age_rating: Database["public"]["Enums"]["age_rating"] | null
           avatar_url: string | null
+          bump_expires_at: string | null
           created_at: string | null
+          credits: number | null
           description: string | null
           id: string
           invite_link: string | null
+          is_bumped: boolean | null
+          is_promoted: boolean | null
           is_verified: boolean | null
           member_count: number | null
           milestone_threshold: number | null
           name: string
           owner_id: string
+          theme: string | null
           updated_at: string | null
           webhook_on_join: boolean | null
           webhook_on_milestone: boolean | null
@@ -93,15 +169,20 @@ export type Database = {
           age_rating?: Database["public"]["Enums"]["age_rating"] | null
           ai_age_rating?: Database["public"]["Enums"]["age_rating"] | null
           avatar_url?: string | null
+          bump_expires_at?: string | null
           created_at?: string | null
+          credits?: number | null
           description?: string | null
           id?: string
           invite_link?: string | null
+          is_bumped?: boolean | null
+          is_promoted?: boolean | null
           is_verified?: boolean | null
           member_count?: number | null
           milestone_threshold?: number | null
           name: string
           owner_id: string
+          theme?: string | null
           updated_at?: string | null
           webhook_on_join?: boolean | null
           webhook_on_milestone?: boolean | null
@@ -111,19 +192,60 @@ export type Database = {
           age_rating?: Database["public"]["Enums"]["age_rating"] | null
           ai_age_rating?: Database["public"]["Enums"]["age_rating"] | null
           avatar_url?: string | null
+          bump_expires_at?: string | null
           created_at?: string | null
+          credits?: number | null
           description?: string | null
           id?: string
           invite_link?: string | null
+          is_bumped?: boolean | null
+          is_promoted?: boolean | null
           is_verified?: boolean | null
           member_count?: number | null
           milestone_threshold?: number | null
           name?: string
           owner_id?: string
+          theme?: string | null
           updated_at?: string | null
           webhook_on_join?: boolean | null
           webhook_on_milestone?: boolean | null
           webhook_url?: string | null
+        }
+        Relationships: []
+      }
+      shop_items: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          duration_hours: number | null
+          id: string
+          is_active: boolean | null
+          name: string
+          price: number
+          theme_data: Json | null
+          type: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          duration_hours?: number | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          price: number
+          theme_data?: Json | null
+          type: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          duration_hours?: number | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          price?: number
+          theme_data?: Json | null
+          type?: string
         }
         Relationships: []
       }
@@ -160,10 +282,11 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_site_owner: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       age_rating: "all_ages" | "under_18" | "18_plus" | "nsfw"
-      app_role: "admin" | "staff" | "owner" | "user"
+      app_role: "owner" | "serverowner"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -292,7 +415,7 @@ export const Constants = {
   public: {
     Enums: {
       age_rating: ["all_ages", "under_18", "18_plus", "nsfw"],
-      app_role: ["admin", "staff", "owner", "user"],
+      app_role: ["owner", "serverowner"],
     },
   },
 } as const

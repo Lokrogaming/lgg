@@ -7,9 +7,10 @@ import { ServerCard } from "@/components/servers/ServerCard";
 import { CreateServerDialog } from "@/components/servers/CreateServerDialog";
 import { EditServerDialog } from "@/components/servers/EditServerDialog";
 import { Button } from "@/components/ui/button";
-import { Plus, Loader2, Server as ServerIcon } from "lucide-react";
+import { Plus, Loader2, Server as ServerIcon, Coins, ShoppingBag } from "lucide-react";
 import { Server } from "@/hooks/useServers";
 import { useEffect } from "react";
+import { Link } from "react-router-dom";
 
 export default function Dashboard() {
   const { user, loading: authLoading } = useAuth();
@@ -32,6 +33,9 @@ export default function Dashboard() {
     );
   }
 
+  const totalCredits = servers.reduce((acc, s) => acc + (s.credits || 0), 0);
+  const totalVotes = servers.reduce((acc, s) => acc + (s.vote_count || 0), 0);
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -51,6 +55,47 @@ export default function Dashboard() {
           </Button>
         </div>
 
+        {/* Stats */}
+        {servers.length > 0 && (
+          <div className="grid gap-4 sm:grid-cols-3 mb-8">
+            <div className="gaming-border p-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-primary/20">
+                  <ServerIcon className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Total Servers</p>
+                  <p className="text-2xl font-bold">{servers.length}</p>
+                </div>
+              </div>
+            </div>
+            <div className="gaming-border p-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-warning/20">
+                  <Coins className="h-5 w-5 text-warning" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Total Credits</p>
+                  <p className="text-2xl font-bold">{totalCredits}</p>
+                </div>
+              </div>
+            </div>
+            <Link to="/shop" className="gaming-border p-4 hover:glow-primary transition-all group">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-success/20">
+                  <ShoppingBag className="h-5 w-5 text-success" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Visit Shop</p>
+                  <p className="text-lg font-medium group-hover:text-primary transition-colors">
+                    Boost your servers →
+                  </p>
+                </div>
+              </div>
+            </Link>
+          </div>
+        )}
+
         {/* Server Grid */}
         {serversLoading ? (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -66,6 +111,7 @@ export default function Dashboard() {
                 server={server} 
                 index={index}
                 showActions
+                showCredits
                 onEdit={() => setEditingServer(server)}
               />
             ))}

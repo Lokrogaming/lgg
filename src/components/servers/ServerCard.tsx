@@ -1,14 +1,16 @@
-import { Server, AgeRating } from "@/hooks/useServers";
+import { Server, AgeRating, useVoteForServer, useUserVotes } from "@/hooks/useServers";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Users, ExternalLink, Shield, AlertTriangle } from "lucide-react";
+import { Users, ExternalLink, Shield, AlertTriangle, ThumbsUp, Sparkles, Zap, Coins } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 
 interface ServerCardProps {
   server: Server;
   index?: number;
   showActions?: boolean;
+  showCredits?: boolean;
   onEdit?: () => void;
 }
 
@@ -19,19 +21,65 @@ const ageRatingConfig: Record<AgeRating, { label: string; variant: "default" | "
   nsfw: { label: "NSFW", variant: "destructive" },
 };
 
-export function ServerCard({ server, index = 0, showActions, onEdit }: ServerCardProps) {
+const themeStyles: Record<string, string> = {
+  default: "",
+  neon: "bg-gradient-to-br from-pink-500/10 to-cyan-500/10 border-pink-500/30",
+  gold: "bg-gradient-to-br from-yellow-500/10 to-amber-600/10 border-yellow-500/30",
+  galaxy: "bg-gradient-to-br from-purple-600/10 to-indigo-600/10 border-purple-500/30",
+};
+
+export function ServerCard({ server, index = 0, showActions, showCredits, onEdit }: ServerCardProps) {
   const ratingConfig = ageRatingConfig[server.age_rating];
+  const { user } = useAuth();
+  const { data: userVotes = [] } = useUserVotes(user?.id);
+  const voteForServer = useVoteForServer();
+  
+  const hasVoted = userVotes.includes(server.id);
+  const themeClass = themeStyles[server.theme] || themeStyles.default;
+
+  const handleVote = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user) {
+      return;
+    }
+    voteForServer.mutate(server.id);
+  };
 
   return (
     <div 
       className={cn(
-        "gaming-border p-6 hover:glow-primary transition-all duration-300 group animate-fade-in",
-        server.age_rating === "nsfw" && "hover:glow-nsfw"
+        "gaming-border p-6 hover:glow-primary transition-all duration-300 group animate-fade-in relative",
+        server.age_rating === "nsfw" && "hover:glow-nsfw",
+        server.is_promoted && "ring-2 ring-warning/50",
+        server.is_bumped && "ring-2 ring-primary/50",
+        themeClass
       )}
       style={{ animationDelay: `${index * 100}ms` }}
     >
+      {/* Status badges */}
+      <div className="absolute top-2 right-2 flex gap-1">
+        {server.is_promoted && (
+          <Badge className="bg-warning text-warning-foreground text-xs">
+            <Sparkles className="h-3 w-3 mr-1" />
+            Promoted
+          </Badge>
+        )}
+        {server.is_bumped && !server.is_promoted && (
+          <Badge className="bg-primary text-primary-foreground text-xs">
+            <Zap className="h-3 w-3 mr-1" />
+            Bumped
+          </Badge>
+        )}
+      </div>
+
       <div className="flex items-start gap-4">
-        <Avatar className="h-14 w-14 rounded-xl border-2 border-border group-hover:border-primary/50 transition-colors">
+        <Avatar className={cn(
+          "h-14 w-14 rounded-xl border-2 border-border group-hover:border-primary/50 transition-colors",
+          server.theme === "neon" && "border-pink-500/50",
+          server.theme === "gold" && "border-yellow-500/50",
+          server.theme === "galaxy" && "border-purple-500/50"
+        )}>
           <AvatarImage src={server.avatar_url || undefined} alt={server.name} />
           <AvatarFallback className="rounded-xl bg-primary/20 text-primary text-lg font-bold">
             {server.name.charAt(0).toUpperCase()}
@@ -63,11 +111,33 @@ export function ServerCard({ server, index = 0, showActions, onEdit }: ServerCar
               <Users className="h-4 w-4" />
               <span>{server.member_count.toLocaleString()}</span>
             </div>
+
+            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+              <ThumbsUp className="h-4 w-4" />
+              <span>{server.vote_count || 0}</span>
+            </div>
+
+            {showCredits && (
+              <div className="flex items-center gap-1 text-sm text-warning">
+                <Coins className="h-4 w-4" />
+                <span>{server.credits}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
       
       <div className="mt-4 pt-4 border-t border-border flex items-center gap-2">
+        <Button
+          variant={hasVoted ? "default" : "outline"}
+          size="sm"
+          onClick={handleVote}
+          disabled={!user || voteForServer.isPending}
+          className={cn(hasVoted && "bg-success hover:bg-success/90")}
+        >
+          <ThumbsUp className={cn("h-4 w-4", hasVoted && "fill-current")} />
+        </Button>
+
         {server.invite_link ? (
           <Button 
             variant={server.age_rating === "nsfw" ? "nsfw" : "default"} 

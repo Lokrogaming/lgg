@@ -1,0 +1,64 @@
+{
+  "rules": [
+    {
+      "paragraph": {
+        "header": "Respect All Members",
+        "text": "Treat everyone with respect. Harassment, discrimination, hate speech, or bullying of any kind will not be tolerated. This includes but is not limited to discrimination based on race, gender, religion, nationality, or sexual orientation."
+      }
+    },
+    {
+      "paragraph": {
+        "header": "No NSFW Content in General Channels",
+        "text": "NSFW (Not Safe For Work) content is strictly prohibited in general channels. Such content is only allowed in designated 18+ servers that require age verification. Violation of this rule will result in immediate removal."
+      }
+    },
+    {
+      "paragraph": {
+        "header": "No Spamming or Self-Promotion",
+        "text": "Avoid excessive messaging, caps, emojis, or repeated content. Self-promotion, advertising, and unsolicited links are not allowed without explicit permission from server administrators."
+      }
+    },
+    {
+      "paragraph": {
+        "header": "Follow Discord's Terms of Service",
+        "text": "All members must adhere to Discord's Terms of Service and Community Guidelines. Violations will be reported to Discord and may result in a permanent ban from LGG servers."
+      }
+    },
+    {
+      "paragraph": {
+        "header": "Keep Conversations Appropriate",
+        "text": "Stay on topic in designated channels. Avoid discussing controversial topics like politics or religion in general chat. Use appropriate channels for specific discussions."
+      }
+    },
+    {
+      "paragraph": {
+        "header": "No Impersonation",
+        "text": "Do not impersonate other users, staff members, or public figures. Using misleading usernames or avatars to deceive others is strictly prohibited."
+      }
+    },
+    {
+      "paragraph": {
+        "header": "Report Issues to Staff",
+        "text": "If you witness rule violations or have concerns, report them to staff privately. Do not engage in public arguments or drama. Staff decisions are final."
+      }
+    },
+    {
+      "paragraph": {
+        "header": "Age-Restricted Server Access",
+        "text": "Access to 18+ and NSFW servers requires identity verification. Users must be of legal age to access such content. Providing false age information will result in a permanent ban."
+      }
+    },
+    {
+      "paragraph": {
+        "header": "Server Owner Responsibilities",
+        "text": "Server owners are responsible for moderating their communities and ensuring compliance with LGG guidelines. Failure to maintain proper moderation may result in server removal from the network."
+      }
+    },
+    {
+      "paragraph": {
+        "header": "Privacy and Security",
+        "text": "Do not share personal information of yourself or others. Respect privacy and never engage in doxxing. Report any attempts to obtain personal information to staff immediately."
+      }
+    }
+  ]
+}

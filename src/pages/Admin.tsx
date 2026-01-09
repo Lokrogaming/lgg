@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import { useAuth } from "@/hooks/useAuth";
 import { useServers, Server, useUpdateServer, useDeleteServer } from "@/hooks/useServers";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -36,18 +35,21 @@ import {
 import { 
   Search, 
   MoreHorizontal, 
-  Shield, 
+  Crown, 
   Trash2, 
   Check, 
   X, 
   Loader2,
   Users,
-  Server as ServerIcon
+  Server as ServerIcon,
+  Coins,
+  Sparkles,
+  Zap
 } from "lucide-react";
 import { toast } from "sonner";
 
 export default function Admin() {
-  const { user, loading: authLoading, isAdmin, isStaff } = useAuth();
+  const { user, loading: authLoading, isSiteOwner } = useAuth();
   const { servers, loading: serversLoading } = useServers();
   const [search, setSearch] = useState("");
   const [deleteConfirm, setDeleteConfirm] = useState<Server | null>(null);
@@ -57,13 +59,13 @@ export default function Admin() {
   const deleteServer = useDeleteServer();
 
   useEffect(() => {
-    if (!authLoading && (!user || (!isAdmin && !isStaff))) {
+    if (!authLoading && (!user || !isSiteOwner)) {
       navigate("/");
-      toast.error("Access denied");
+      toast.error("Access denied - Site Owner only");
     }
-  }, [user, authLoading, isAdmin, isStaff, navigate]);
+  }, [user, authLoading, isSiteOwner, navigate]);
 
-  if (authLoading || !user || (!isAdmin && !isStaff)) {
+  if (authLoading || !user || !isSiteOwner) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -83,11 +85,29 @@ export default function Admin() {
     toast.success(server.is_verified ? "Server unverified" : "Server verified");
   };
 
+  const handleTogglePromotion = async (server: Server) => {
+    await updateServer.mutateAsync({
+      id: server.id,
+      is_promoted: !server.is_promoted,
+    });
+    toast.success(server.is_promoted ? "Promotion removed" : "Server promoted");
+  };
+
+  const handleAddCredits = async (server: Server, amount: number) => {
+    await updateServer.mutateAsync({
+      id: server.id,
+      credits: (server.credits || 0) + amount,
+    });
+    toast.success(`Added ${amount} credits to ${server.name}`);
+  };
+
   const handleDelete = async () => {
     if (!deleteConfirm) return;
     await deleteServer.mutateAsync(deleteConfirm.id);
     setDeleteConfirm(null);
   };
+
+  const totalCredits = servers.reduce((acc, s) => acc + (s.credits || 0), 0);
 
   return (
     <div className="min-h-screen bg-background">
@@ -98,15 +118,16 @@ export default function Admin() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <Shield className="h-6 w-6 text-primary" />
-              <h1 className="text-3xl font-bold">Admin Panel</h1>
+              <Crown className="h-6 w-6 text-warning" />
+              <h1 className="text-3xl font-bold">Owner Panel</h1>
             </div>
             <p className="text-muted-foreground">
-              Manage all servers and users across the LGG network
+              Full control over all servers in the LGG network
             </p>
           </div>
-          <Badge variant="outline" className="text-primary border-primary">
-            {isAdmin ? "Administrator" : "Staff"}
+          <Badge className="bg-warning text-warning-foreground">
+            <Crown className="h-3 w-3 mr-1" />
+            Site Owner
           </Badge>
         </div>
 
@@ -136,25 +157,23 @@ export default function Admin() {
           </div>
           <div className="gaming-border p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-nsfw/20">
-                <Shield className="h-5 w-5 text-nsfw" />
+              <div className="p-2 rounded-lg bg-warning/20">
+                <Sparkles className="h-5 w-5 text-warning" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">NSFW Servers</p>
-                <p className="text-2xl font-bold">{servers.filter(s => s.age_rating === "nsfw").length}</p>
+                <p className="text-sm text-muted-foreground">Promoted</p>
+                <p className="text-2xl font-bold">{servers.filter(s => s.is_promoted).length}</p>
               </div>
             </div>
           </div>
           <div className="gaming-border p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-warning/20">
-                <Users className="h-5 w-5 text-warning" />
+              <div className="p-2 rounded-lg bg-amber-500/20">
+                <Coins className="h-5 w-5 text-amber-500" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Total Members</p>
-                <p className="text-2xl font-bold">
-                  {servers.reduce((acc, s) => acc + s.member_count, 0).toLocaleString()}
-                </p>
+                <p className="text-sm text-muted-foreground">Total Credits</p>
+                <p className="text-2xl font-bold">{totalCredits}</p>
               </div>
             </div>
           </div>
@@ -178,7 +197,7 @@ export default function Admin() {
               <TableRow className="hover:bg-transparent">
                 <TableHead>Server</TableHead>
                 <TableHead>Age Rating</TableHead>
-                <TableHead>Members</TableHead>
+                <TableHead>Credits</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -208,9 +227,13 @@ export default function Admin() {
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="font-medium">{server.name}</p>
-                          <p className="text-xs text-muted-foreground truncate max-w-[200px]">
-                            {server.description || "No description"}
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium">{server.name}</p>
+                            {server.is_promoted && <Sparkles className="h-3 w-3 text-warning" />}
+                            {server.is_bumped && <Zap className="h-3 w-3 text-primary" />}
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            {server.member_count.toLocaleString()} members • {server.vote_count || 0} votes
                           </p>
                         </div>
                       </div>
@@ -222,19 +245,24 @@ export default function Admin() {
                         {server.age_rating.replace("_", " ").toUpperCase()}
                       </Badge>
                     </TableCell>
-                    <TableCell>{server.member_count.toLocaleString()}</TableCell>
                     <TableCell>
-                      {server.is_verified ? (
-                        <Badge className="bg-success text-success-foreground">
-                          <Check className="h-3 w-3 mr-1" />
-                          Verified
-                        </Badge>
-                      ) : (
-                        <Badge variant="outline">
-                          <X className="h-3 w-3 mr-1" />
-                          Unverified
-                        </Badge>
-                      )}
+                      <div className="flex items-center gap-1 text-warning">
+                        <Coins className="h-4 w-4" />
+                        {server.credits || 0}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-1">
+                        {server.is_verified ? (
+                          <Badge className="bg-success text-success-foreground text-xs">
+                            Verified
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-xs">
+                            Unverified
+                          </Badge>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
@@ -256,6 +284,19 @@ export default function Admin() {
                                 Verify
                               </>
                             )}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleTogglePromotion(server)}>
+                            <Sparkles className="mr-2 h-4 w-4" />
+                            {server.is_promoted ? "Remove Promotion" : "Promote"}
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => handleAddCredits(server, 100)}>
+                            <Coins className="mr-2 h-4 w-4" />
+                            Add 100 Credits
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleAddCredits(server, 500)}>
+                            <Coins className="mr-2 h-4 w-4" />
+                            Add 500 Credits
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem 

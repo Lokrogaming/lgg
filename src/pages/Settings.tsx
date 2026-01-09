@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, User, Shield, CheckCircle2 } from "lucide-react";
+import { Loader2, User, Crown, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface Profile {
@@ -19,7 +19,7 @@ interface Profile {
 }
 
 export default function Settings() {
-  const { user, loading: authLoading, isAdmin, isStaff, roles } = useAuth();
+  const { user, loading: authLoading, isSiteOwner, isServerOwner, roles } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [username, setUsername] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
@@ -117,10 +117,15 @@ export default function Settings() {
                     Verified
                   </Badge>
                 )}
-                {(isAdmin || isStaff) && (
+                {isSiteOwner && (
+                  <Badge className="bg-warning text-warning-foreground">
+                    <Crown className="h-3 w-3 mr-1" />
+                    Site Owner
+                  </Badge>
+                )}
+                {isServerOwner && !isSiteOwner && (
                   <Badge variant="outline" className="text-primary border-primary">
-                    <Shield className="h-3 w-3 mr-1" />
-                    {isAdmin ? "Admin" : "Staff"}
+                    Server Owner
                   </Badge>
                 )}
               </div>
@@ -184,8 +189,15 @@ export default function Settings() {
               <span className="font-mono text-xs">{user.id}</span>
             </div>
             <div className="flex justify-between py-2 border-b border-border">
-              <span className="text-muted-foreground">Roles</span>
-              <span>{roles.length > 0 ? roles.join(", ") : "User"}</span>
+              <span className="text-muted-foreground">Role</span>
+              <span>
+                {isSiteOwner 
+                  ? "Site Owner" 
+                  : isServerOwner 
+                    ? "Server Owner" 
+                    : "User"
+                }
+              </span>
             </div>
             <div className="flex justify-between py-2">
               <span className="text-muted-foreground">Account Created</span>

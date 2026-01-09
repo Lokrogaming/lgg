@@ -2,14 +2,14 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
-type AppRole = "admin" | "staff" | "owner" | "user";
+type AppRole = "owner" | "serverowner";
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  isAdmin: boolean;
-  isStaff: boolean;
+  isSiteOwner: boolean;
+  isServerOwner: boolean;
   roles: AppRole[];
   signOut: () => Promise<void>;
   refreshRoles: () => Promise<void>;
@@ -50,13 +50,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         
-        // Defer role fetching
         if (session?.user) {
           setTimeout(() => {
             fetchRoles(session.user.id).then(setRoles);
@@ -69,7 +67,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     );
 
-    // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
@@ -89,16 +86,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setRoles([]);
   };
 
-  const isAdmin = roles.includes("admin");
-  const isStaff = roles.includes("staff") || isAdmin;
+  const isSiteOwner = roles.includes("owner");
+  const isServerOwner = roles.includes("serverowner") || isSiteOwner;
 
   return (
     <AuthContext.Provider value={{ 
       user, 
       session, 
       loading, 
-      isAdmin, 
-      isStaff, 
+      isSiteOwner,
+      isServerOwner,
       roles,
       signOut,
       refreshRoles 

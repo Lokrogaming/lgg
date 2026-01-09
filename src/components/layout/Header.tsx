@@ -9,11 +9,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, Settings, LayoutDashboard, Shield, Menu, X } from "lucide-react";
+import { LogOut, Settings, LayoutDashboard, Crown, Menu, X, ShoppingBag } from "lucide-react";
 import { useState } from "react";
 
 export function Header() {
-  const { user, signOut, isAdmin, isStaff } = useAuth();
+  const { user, signOut, isSiteOwner } = useAuth();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -41,6 +41,12 @@ export function Header() {
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
             Servers
+          </Link>
+          <Link 
+            to="/shop" 
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Shop
           </Link>
           <Link 
             to="/rules" 
@@ -76,9 +82,9 @@ export function Header() {
                     <span className="text-sm font-medium truncate max-w-[140px]">
                       {user.email}
                     </span>
-                    {(isAdmin || isStaff) && (
-                      <span className="text-xs text-primary">
-                        {isAdmin ? "Admin" : "Staff"}
+                    {isSiteOwner && (
+                      <span className="text-xs text-warning">
+                        Site Owner
                       </span>
                     )}
                   </div>
@@ -88,10 +94,14 @@ export function Header() {
                   <LayoutDashboard className="mr-2 h-4 w-4" />
                   Dashboard
                 </DropdownMenuItem>
-                {(isAdmin || isStaff) && (
+                <DropdownMenuItem onClick={() => navigate("/shop")}>
+                  <ShoppingBag className="mr-2 h-4 w-4" />
+                  Shop
+                </DropdownMenuItem>
+                {isSiteOwner && (
                   <DropdownMenuItem onClick={() => navigate("/admin")}>
-                    <Shield className="mr-2 h-4 w-4" />
-                    Admin Panel
+                    <Crown className="mr-2 h-4 w-4" />
+                    Owner Panel
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem onClick={() => navigate("/settings")}>
@@ -138,6 +148,13 @@ export function Header() {
               onClick={() => setMobileMenuOpen(false)}
             >
               Servers
+            </Link>
+            <Link 
+              to="/shop" 
+              className="px-4 py-2 rounded-lg hover:bg-secondary transition-colors"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Shop
             </Link>
             <Link 
               to="/rules" 

@@ -172,6 +172,9 @@ export default function Index() {
               <Link to="/servers" className="hover:text-foreground transition-colors">
                 Servers
               </Link>
+            <Link to="https://dcs.lol" className="hover:text-foreground transition-colors">
+              DCS.LOL API
+            </Link>
             </div>
             <p className="text-sm text-muted-foreground">
               © 2024 LGG. All rights reserved.

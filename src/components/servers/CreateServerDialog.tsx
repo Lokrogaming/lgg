@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -19,8 +19,11 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useCreateServer, AgeRating } from "@/hooks/useServers";
-import { Loader2, Image, Link, Bell } from "lucide-react";
+import { extractInviteCode, fetchDcsServerInfo } from "@/hooks/useDcsApi";
+import { AvatarUpload } from "@/components/ui/avatar-upload";
+import { Loader2, Link, Bell, RefreshCw } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from "sonner";
 
 interface CreateServerDialogProps {
   open: boolean;
@@ -38,8 +41,45 @@ export function CreateServerDialog({ open, onOpenChange, onSuccess }: CreateServ
   const [webhookOnMilestone, setWebhookOnMilestone] = useState(false);
   const [webhookOnJoin, setWebhookOnJoin] = useState(false);
   const [milestoneThreshold, setMilestoneThreshold] = useState(100);
+  const [fetching, setFetching] = useState(false);
 
   const createServer = useCreateServer();
+
+  // Auto-fetch server info when invite link changes
+  useEffect(() => {
+    const code = extractInviteCode(inviteLink);
+    if (code && code.length >= 4) {
+      const timer = setTimeout(() => {
+        handleFetchFromDiscord();
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [inviteLink]);
+
+  const handleFetchFromDiscord = async () => {
+    const code = extractInviteCode(inviteLink);
+    if (!code) {
+      toast.error("Invalid invite link");
+      return;
+    }
+
+    setFetching(true);
+    try {
+      const info = await fetchDcsServerInfo(code);
+      if (info) {
+        if (!name) setName(info.name);
+        if (!description && info.description) setDescription(info.description);
+        if (!avatarUrl && info.icon) setAvatarUrl(info.icon);
+        toast.success("Server info fetched from Discord!");
+      } else {
+        toast.error("Could not fetch server info");
+      }
+    } catch {
+      toast.error("Failed to fetch server info");
+    } finally {
+      setFetching(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,6 +110,9 @@ export function CreateServerDialog({ open, onOpenChange, onSuccess }: CreateServ
     onOpenChange(false);
     onSuccess?.();
   };
+
+  const inviteCode = extractInviteCode(inviteLink);
+  const dcsLink = inviteCode ? `https://dcs.lol/${inviteCode}` : null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -133,32 +176,45 @@ export function CreateServerDialog({ open, onOpenChange, onSuccess }: CreateServ
 
             <TabsContent value="links" className="space-y-4 mt-4">
               <div className="space-y-2">
-                <Label htmlFor="avatar" className="flex items-center gap-2">
-                  <Image className="h-4 w-4" />
-                  Avatar URL
-                </Label>
-                <Input
-                  id="avatar"
-                  type="url"
-                  value={avatarUrl}
-                  onChange={(e) => setAvatarUrl(e.target.value)}
-                  placeholder="https://example.com/avatar.png"
-                />
-              </div>
-
-              <div className="space-y-2">
                 <Label htmlFor="invite" className="flex items-center gap-2">
                   <Link className="h-4 w-4" />
                   Discord Invite Link
                 </Label>
-                <Input
-                  id="invite"
-                  type="url"
-                  value={inviteLink}
-                  onChange={(e) => setInviteLink(e.target.value)}
-                  placeholder="https://discord.gg/..."
-                />
+                <div className="flex gap-2">
+                  <Input
+                    id="invite"
+                    type="url"
+                    value={inviteLink}
+                    onChange={(e) => setInviteLink(e.target.value)}
+                    placeholder="https://discord.gg/..."
+                    className="flex-1"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleFetchFromDiscord}
+                    disabled={fetching || !inviteCode}
+                  >
+                    {fetching ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <RefreshCw className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+                {dcsLink && (
+                  <p className="text-xs text-success">
+                    DCS.lol link: <code className="bg-success/20 px-1 rounded">{dcsLink}</code>
+                  </p>
+                )}
               </div>
+
+              <AvatarUpload
+                value={avatarUrl}
+                onChange={setAvatarUrl}
+                fallback={name || "S"}
+                label="Server Avatar"
+              />
             </TabsContent>
 
             <TabsContent value="webhooks" className="space-y-4 mt-4">

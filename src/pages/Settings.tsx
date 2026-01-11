@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { AvatarUpload } from "@/components/ui/avatar-upload";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, User, Crown, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
@@ -19,7 +19,7 @@ interface Profile {
 }
 
 export default function Settings() {
-  const { user, loading: authLoading, isSiteOwner, isServerOwner, roles } = useAuth();
+  const { user, loading: authLoading, isSiteOwner, isServerOwner } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [username, setUsername] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
@@ -98,14 +98,8 @@ export default function Settings() {
 
         {/* Profile Card */}
         <div className="gaming-border p-6 mb-8">
-          <div className="flex items-center gap-4 mb-6">
-            <Avatar className="h-20 w-20 border-2 border-primary/50">
-              <AvatarImage src={avatarUrl || undefined} />
-              <AvatarFallback className="bg-primary/20 text-primary text-2xl">
-                {username?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <div>
+          <div className="flex items-start gap-4 mb-6">
+            <div className="flex-1">
               <h2 className="text-xl font-semibold">
                 {username || "Set your username"}
               </h2>
@@ -138,6 +132,13 @@ export default function Settings() {
             </div>
           ) : (
             <div className="space-y-4">
+              <AvatarUpload
+                value={avatarUrl}
+                onChange={setAvatarUrl}
+                fallback={username || user.email || "U"}
+                label="Profile Avatar"
+              />
+
               <div className="space-y-2">
                 <Label htmlFor="username">Username</Label>
                 <div className="relative">
@@ -150,17 +151,6 @@ export default function Settings() {
                     className="pl-10"
                   />
                 </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="avatar">Avatar URL</Label>
-                <Input
-                  id="avatar"
-                  type="url"
-                  value={avatarUrl}
-                  onChange={(e) => setAvatarUrl(e.target.value)}
-                  placeholder="https://example.com/avatar.png"
-                />
               </div>
 
               <Button 

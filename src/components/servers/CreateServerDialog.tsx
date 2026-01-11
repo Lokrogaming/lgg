@@ -285,6 +285,9 @@ export function CreateServerDialog({ open, onOpenChange, onSuccess }: CreateServ
           </Tabs>
 
           <div className="flex justify-end gap-2 pt-4 border-t">
+          <p className="text-xs text-muted-foreground">
+                  All server information, invitelink creation made with <Link to="https://dcs.lol">dcs.lol API</Link>
+                </p>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>

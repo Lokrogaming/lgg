@@ -14,6 +14,7 @@ export interface Server {
   age_rating: AgeRating;
   ai_age_rating: AgeRating | null;
   member_count: number;
+  online_count: number;
   is_verified: boolean;
   webhook_url: string | null;
   webhook_on_milestone: boolean;
@@ -27,6 +28,13 @@ export interface Server {
   created_at: string;
   updated_at: string;
   vote_count?: number;
+  // Customization fields
+  custom_card_data: unknown | null;
+  custom_landing_data: unknown | null;
+  has_custom_card: boolean;
+  has_custom_landing: boolean;
+  dcs_short_code: string | null;
+  guild_id: string | null;
 }
 
 export function useServers() {
@@ -162,9 +170,11 @@ export function useUpdateServer() {
       id,
       ...updates
     }: Partial<Server> & { id: string }) => {
+      // Cast to any to handle custom JSON fields
+      const updateData = updates as Record<string, unknown>;
       const { data, error } = await supabase
         .from("servers")
-        .update(updates)
+        .update(updateData)
         .eq("id", id)
         .select()
         .single();

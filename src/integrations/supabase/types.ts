@@ -149,7 +149,13 @@ export type Database = {
           bump_expires_at: string | null
           created_at: string | null
           credits: number | null
+          custom_card_data: Json | null
+          custom_landing_data: Json | null
+          dcs_short_code: string | null
           description: string | null
+          guild_id: string | null
+          has_custom_card: boolean | null
+          has_custom_landing: boolean | null
           id: string
           invite_link: string | null
           is_bumped: boolean | null
@@ -158,6 +164,7 @@ export type Database = {
           member_count: number | null
           milestone_threshold: number | null
           name: string
+          online_count: number | null
           owner_id: string
           theme: string | null
           updated_at: string | null
@@ -172,7 +179,13 @@ export type Database = {
           bump_expires_at?: string | null
           created_at?: string | null
           credits?: number | null
+          custom_card_data?: Json | null
+          custom_landing_data?: Json | null
+          dcs_short_code?: string | null
           description?: string | null
+          guild_id?: string | null
+          has_custom_card?: boolean | null
+          has_custom_landing?: boolean | null
           id?: string
           invite_link?: string | null
           is_bumped?: boolean | null
@@ -181,6 +194,7 @@ export type Database = {
           member_count?: number | null
           milestone_threshold?: number | null
           name: string
+          online_count?: number | null
           owner_id: string
           theme?: string | null
           updated_at?: string | null
@@ -195,7 +209,13 @@ export type Database = {
           bump_expires_at?: string | null
           created_at?: string | null
           credits?: number | null
+          custom_card_data?: Json | null
+          custom_landing_data?: Json | null
+          dcs_short_code?: string | null
           description?: string | null
+          guild_id?: string | null
+          has_custom_card?: boolean | null
+          has_custom_landing?: boolean | null
           id?: string
           invite_link?: string | null
           is_bumped?: boolean | null
@@ -204,6 +224,7 @@ export type Database = {
           member_count?: number | null
           milestone_threshold?: number | null
           name?: string
+          online_count?: number | null
           owner_id?: string
           theme?: string | null
           updated_at?: string | null

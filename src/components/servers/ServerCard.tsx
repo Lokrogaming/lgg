@@ -1,8 +1,10 @@
+import { Link } from "react-router-dom";
 import { Server, AgeRating, useVoteForServer, useUserVotes } from "@/hooks/useServers";
+import { useDcsServerInfo, extractInviteCode } from "@/hooks/useDcsApi";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Users, ExternalLink, Shield, AlertTriangle, ThumbsUp, Sparkles, Zap, Coins } from "lucide-react";
+import { Users, ExternalLink, Shield, AlertTriangle, ThumbsUp, Sparkles, Zap, Coins, Wifi, Eye, Palette } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -12,6 +14,7 @@ interface ServerCardProps {
   showActions?: boolean;
   showCredits?: boolean;
   onEdit?: () => void;
+  onCustomize?: () => void;
 }
 
 const ageRatingConfig: Record<AgeRating, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; className?: string }> = {
@@ -21,21 +24,63 @@ const ageRatingConfig: Record<AgeRating, { label: string; variant: "default" | "
   nsfw: { label: "NSFW", variant: "destructive" },
 };
 
-const themeStyles: Record<string, string> = {
-  default: "",
-  neon: "bg-gradient-to-br from-pink-500/10 to-cyan-500/10 border-pink-500/30",
-  gold: "bg-gradient-to-br from-yellow-500/10 to-amber-600/10 border-yellow-500/30",
-  galaxy: "bg-gradient-to-br from-purple-600/10 to-indigo-600/10 border-purple-500/30",
+interface ThemeData {
+  background?: string;
+  borderColor?: string;
+  fontFamily?: string;
+  accentColor?: string;
+}
+
+interface CustomCardData {
+  backgroundColor?: string;
+  borderColor?: string;
+  textColor?: string;
+  accentColor?: string;
+  fontFamily?: string;
+  glowColor?: string;
+}
+
+const themeStyles: Record<string, ThemeData> = {
+  default: {},
+  neon: {
+    background: "linear-gradient(135deg, rgba(236, 72, 153, 0.1), rgba(6, 182, 212, 0.1))",
+    borderColor: "rgba(236, 72, 153, 0.5)",
+    fontFamily: "Orbitron, sans-serif",
+    accentColor: "#ec4899",
+  },
+  gold: {
+    background: "linear-gradient(135deg, rgba(234, 179, 8, 0.1), rgba(217, 119, 6, 0.1))",
+    borderColor: "rgba(234, 179, 8, 0.5)",
+    fontFamily: "Cinzel, serif",
+    accentColor: "#eab308",
+  },
+  galaxy: {
+    background: "linear-gradient(135deg, rgba(147, 51, 234, 0.1), rgba(79, 70, 229, 0.1))",
+    borderColor: "rgba(147, 51, 234, 0.5)",
+    fontFamily: "Space Grotesk, sans-serif",
+    accentColor: "#9333ea",
+  },
 };
 
-export function ServerCard({ server, index = 0, showActions, showCredits, onEdit }: ServerCardProps) {
+export function ServerCard({ server, index = 0, showActions, showCredits, onEdit, onCustomize }: ServerCardProps) {
   const ratingConfig = ageRatingConfig[server.age_rating];
   const { user } = useAuth();
   const { data: userVotes = [] } = useUserVotes(user?.id);
   const voteForServer = useVoteForServer();
   
+  // Fetch live data from dcs.lol
+  const inviteCode = server.invite_link ? extractInviteCode(server.invite_link) : null;
+  const { data: dcsInfo } = useDcsServerInfo(inviteCode);
+  
   const hasVoted = userVotes.includes(server.id);
-  const themeClass = themeStyles[server.theme] || themeStyles.default;
+  const themeData = themeStyles[server.theme] || themeStyles.default;
+  const customCardData = server.has_custom_card ? (server.custom_card_data as CustomCardData) : null;
+  
+  // Use DCS data when available, fallback to stored data
+  const memberCount = dcsInfo?.memberCount || server.member_count;
+  const onlineCount = dcsInfo?.onlineCount || server.online_count || 0;
+  const avatarUrl = dcsInfo?.icon || server.avatar_url;
+  const dcsLink = inviteCode ? `https://dcs.lol/${inviteCode}` : server.invite_link;
 
   const handleVote = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -46,6 +91,19 @@ export function ServerCard({ server, index = 0, showActions, showCredits, onEdit
     voteForServer.mutate(server.id);
   };
 
+  // Custom styles for fully customized cards
+  const customStyles: React.CSSProperties = customCardData ? {
+    backgroundColor: customCardData.backgroundColor,
+    borderColor: customCardData.borderColor,
+    color: customCardData.textColor,
+    fontFamily: customCardData.fontFamily,
+    boxShadow: customCardData.glowColor ? `0 0 20px ${customCardData.glowColor}40` : undefined,
+  } : themeData.background ? {
+    background: themeData.background,
+    borderColor: themeData.borderColor,
+    fontFamily: themeData.fontFamily,
+  } : {};
+
   return (
     <div 
       className={cn(
@@ -53,12 +111,17 @@ export function ServerCard({ server, index = 0, showActions, showCredits, onEdit
         server.age_rating === "nsfw" && "hover:glow-nsfw",
         server.is_promoted && "ring-2 ring-warning/50",
         server.is_bumped && "ring-2 ring-primary/50",
-        themeClass
       )}
-      style={{ animationDelay: `${index * 100}ms` }}
+      style={{ animationDelay: `${index * 100}ms`, ...customStyles }}
     >
       {/* Status badges */}
       <div className="absolute top-2 right-2 flex gap-1">
+        {server.has_custom_card && (
+          <Badge variant="outline" className="text-xs bg-background/50">
+            <Palette className="h-3 w-3 mr-1" />
+            Custom
+          </Badge>
+        )}
         {server.is_promoted && (
           <Badge className="bg-warning text-warning-foreground text-xs">
             <Sparkles className="h-3 w-3 mr-1" />
@@ -76,11 +139,8 @@ export function ServerCard({ server, index = 0, showActions, showCredits, onEdit
       <div className="flex items-start gap-4">
         <Avatar className={cn(
           "h-14 w-14 rounded-xl border-2 border-border group-hover:border-primary/50 transition-colors",
-          server.theme === "neon" && "border-pink-500/50",
-          server.theme === "gold" && "border-yellow-500/50",
-          server.theme === "galaxy" && "border-purple-500/50"
-        )}>
-          <AvatarImage src={server.avatar_url || undefined} alt={server.name} />
+        )} style={{ borderColor: customCardData?.accentColor || themeData.accentColor }}>
+          <AvatarImage src={avatarUrl || undefined} alt={server.name} />
           <AvatarFallback className="rounded-xl bg-primary/20 text-primary text-lg font-bold">
             {server.name.charAt(0).toUpperCase()}
           </AvatarFallback>
@@ -109,7 +169,12 @@ export function ServerCard({ server, index = 0, showActions, showCredits, onEdit
             
             <div className="flex items-center gap-1 text-sm text-muted-foreground">
               <Users className="h-4 w-4" />
-              <span>{server.member_count.toLocaleString()}</span>
+              <span>{memberCount.toLocaleString()}</span>
+            </div>
+
+            <div className="flex items-center gap-1 text-sm text-success">
+              <Wifi className="h-4 w-4" />
+              <span>{onlineCount.toLocaleString()}</span>
             </div>
 
             <div className="flex items-center gap-1 text-sm text-muted-foreground">
@@ -138,13 +203,24 @@ export function ServerCard({ server, index = 0, showActions, showCredits, onEdit
           <ThumbsUp className={cn("h-4 w-4", hasVoted && "fill-current")} />
         </Button>
 
-        {server.invite_link ? (
+        <Button
+          variant="outline"
+          size="sm"
+          asChild
+        >
+          <Link to={`/server/${server.id}`}>
+            <Eye className="h-4 w-4 mr-1" />
+            View
+          </Link>
+        </Button>
+
+        {dcsLink ? (
           <Button 
             variant={server.age_rating === "nsfw" ? "nsfw" : "default"} 
             className="flex-1"
             asChild
           >
-            <a href={server.invite_link} target="_blank" rel="noopener noreferrer">
+            <a href={dcsLink} target="_blank" rel="noopener noreferrer">
               Join Server
               <ExternalLink className="ml-2 h-4 w-4" />
             </a>
@@ -158,6 +234,12 @@ export function ServerCard({ server, index = 0, showActions, showCredits, onEdit
         {showActions && onEdit && (
           <Button variant="outline" onClick={onEdit}>
             Edit
+          </Button>
+        )}
+
+        {showActions && onCustomize && server.has_custom_card && (
+          <Button variant="outline" onClick={onCustomize}>
+            <Palette className="h-4 w-4" />
           </Button>
         )}
       </div>

@@ -249,13 +249,36 @@ export default function ServerLanding() {
           {(server.dcs_short_code || inviteCode) && (
             <div className="gaming-border p-6 text-center">
               <p className="text-sm text-muted-foreground mb-2">
-                Quick join link powered by DCS.lol
+                Quick join link powered by{" "}
+                <a 
+                  href="https://dcs.lol" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  DCS.lol
+                </a>
               </p>
               <code className="text-lg font-mono text-primary bg-primary/10 px-4 py-2 rounded-lg">
                 dcs.lol/{server.dcs_short_code || inviteCode}
               </code>
             </div>
           )}
+
+          {/* DCS.lol API Attribution */}
+          <div className="mt-8 text-center">
+            <p className="text-xs text-muted-foreground">
+              Server statistics & invite links powered by{" "}
+              <a 
+                href="https://dcs.lol/docs/api" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                DCS.lol API
+              </a>
+            </p>
+          </div>
         </div>
       </section>
     </div>

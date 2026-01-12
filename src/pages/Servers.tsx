@@ -108,6 +108,21 @@ export default function Servers() {
               </p>
             </div>
           )}
+
+          {/* DCS.lol API Attribution */}
+          <div className="mt-12 text-center">
+            <p className="text-xs text-muted-foreground">
+              Server data powered by{" "}
+              <a 
+                href="https://dcs.lol" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                DCS.lol API
+              </a>
+            </p>
+          </div>
         </div>
       </section>
     </div>

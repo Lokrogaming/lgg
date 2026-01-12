@@ -178,6 +178,12 @@ export function EditServerDialog({ server, open, onOpenChange, onSuccess }: Edit
                     <SelectItem value="nsfw">NSFW - Explicit content (18+ required)</SelectItem>
                   </SelectContent>
                 </Select>
+                <p className="text-xs text-muted-foreground">
+                  Server data powered by{" "}
+                  <a href="https://dcs.lol" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                    DCS.lol API
+                  </a>
+                </p>
               </div>
 
               <div className="flex items-center gap-2 text-sm">

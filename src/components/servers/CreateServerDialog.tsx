@@ -19,9 +19,9 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useCreateServer, AgeRating } from "@/hooks/useServers";
-import { extractInviteCode, fetchDcsServerInfo } from "@/hooks/useDcsApi";
+import { extractInviteCode, fetchDcsServerInfo, createDcsLink } from "@/hooks/useDcsApi";
 import { AvatarUpload } from "@/components/ui/avatar-upload";
-import { Loader2, Link, Bell, RefreshCw } from "lucide-react";
+import { Loader2, Link as LinkIcon, Bell, RefreshCw, Check, X } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 
@@ -35,29 +35,38 @@ export function CreateServerDialog({ open, onOpenChange, onSuccess }: CreateServ
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
-  const [inviteLink, setInviteLink] = useState("");
+  const [discordInviteLink, setDiscordInviteLink] = useState("");
+  const [dcsShortCode, setDcsShortCode] = useState("");
+  const [dcsLink, setDcsLink] = useState("");
+  const [guildId, setGuildId] = useState("");
+  const [memberCount, setMemberCount] = useState(0);
+  const [onlineCount, setOnlineCount] = useState(0);
   const [ageRating, setAgeRating] = useState<AgeRating>("all_ages");
   const [webhookUrl, setWebhookUrl] = useState("");
   const [webhookOnMilestone, setWebhookOnMilestone] = useState(false);
   const [webhookOnJoin, setWebhookOnJoin] = useState(false);
   const [milestoneThreshold, setMilestoneThreshold] = useState(100);
   const [fetching, setFetching] = useState(false);
+  const [creatingDcsLink, setCreatingDcsLink] = useState(false);
+  const [serverInfoFetched, setServerInfoFetched] = useState(false);
 
   const createServer = useCreateServer();
 
-  // Auto-fetch server info when invite link changes
+  // Auto-fetch server info when discord invite link changes
   useEffect(() => {
-    const code = extractInviteCode(inviteLink);
+    const code = extractInviteCode(discordInviteLink);
     if (code && code.length >= 4) {
       const timer = setTimeout(() => {
         handleFetchFromDiscord();
       }, 1000);
       return () => clearTimeout(timer);
+    } else {
+      setServerInfoFetched(false);
     }
-  }, [inviteLink]);
+  }, [discordInviteLink]);
 
   const handleFetchFromDiscord = async () => {
-    const code = extractInviteCode(inviteLink);
+    const code = extractInviteCode(discordInviteLink);
     if (!code) {
       toast.error("Invalid invite link");
       return;
@@ -69,26 +78,83 @@ export function CreateServerDialog({ open, onOpenChange, onSuccess }: CreateServ
       if (info) {
         if (!name) setName(info.name);
         if (!description && info.description) setDescription(info.description);
-        if (!avatarUrl && info.icon) setAvatarUrl(info.icon);
+        if (info.icon) setAvatarUrl(info.icon);
+        setGuildId(info.guildId);
+        setMemberCount(info.memberCount);
+        setOnlineCount(info.onlineCount);
+        setServerInfoFetched(true);
         toast.success("Server info fetched from Discord!");
       } else {
-        toast.error("Could not fetch server info");
+        toast.error("Could not fetch server info. Please check the invite link.");
+        setServerInfoFetched(false);
       }
     } catch {
       toast.error("Failed to fetch server info");
+      setServerInfoFetched(false);
     } finally {
       setFetching(false);
+    }
+  };
+
+  const handleCreateDcsLink = async () => {
+    if (!discordInviteLink) {
+      toast.error("Please enter a Discord invite link first");
+      return;
+    }
+
+    setCreatingDcsLink(true);
+    try {
+      // Create a short code based on server name (lowercase, no spaces)
+      const customId = name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "")
+        .substring(0, 20) || undefined;
+
+      const result = await createDcsLink(discordInviteLink, customId);
+      if (result) {
+        setDcsShortCode(result.shortCode);
+        setDcsLink(result.shortUrl);
+        toast.success("DCS.lol link created!");
+      } else {
+        // Fallback: use the invite code directly
+        const code = extractInviteCode(discordInviteLink);
+        if (code) {
+          setDcsShortCode(code);
+          setDcsLink(`https://dcs.lol/${code}`);
+          toast.info("Using Discord invite code as DCS link");
+        } else {
+          toast.error("Could not create DCS link");
+        }
+      }
+    } catch {
+      toast.error("Failed to create DCS link");
+    } finally {
+      setCreatingDcsLink(false);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Ensure we have a DCS link if we have a Discord invite
+    let finalDcsShortCode = dcsShortCode;
+    if (discordInviteLink && !dcsShortCode) {
+      const code = extractInviteCode(discordInviteLink);
+      if (code) {
+        finalDcsShortCode = code;
+      }
+    }
+
     await createServer.mutateAsync({
       name,
       description: description || undefined,
       avatar_url: avatarUrl || undefined,
-      invite_link: inviteLink || undefined,
+      invite_link: discordInviteLink || undefined,
+      dcs_short_code: finalDcsShortCode || undefined,
+      guild_id: guildId || undefined,
+      member_count: memberCount,
+      online_count: onlineCount,
       age_rating: ageRating,
       webhook_url: webhookUrl || undefined,
       webhook_on_milestone: webhookOnMilestone,
@@ -100,19 +166,24 @@ export function CreateServerDialog({ open, onOpenChange, onSuccess }: CreateServ
     setName("");
     setDescription("");
     setAvatarUrl("");
-    setInviteLink("");
+    setDiscordInviteLink("");
+    setDcsShortCode("");
+    setDcsLink("");
+    setGuildId("");
+    setMemberCount(0);
+    setOnlineCount(0);
     setAgeRating("all_ages");
     setWebhookUrl("");
     setWebhookOnMilestone(false);
     setWebhookOnJoin(false);
     setMilestoneThreshold(100);
+    setServerInfoFetched(false);
 
     onOpenChange(false);
     onSuccess?.();
   };
 
-  const inviteCode = extractInviteCode(inviteLink);
-  const dcsLink = inviteCode ? `https://dcs.lol/${inviteCode}` : null;
+  const inviteCode = extractInviteCode(discordInviteLink);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -172,45 +243,85 @@ export function CreateServerDialog({ open, onOpenChange, onSuccess }: CreateServ
                   AI will verify your rating. NSFW servers require identity verification.
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  All server information, invitelink creation made with <Link to="https://dcs.lol" className="hover:text-foreground transition-colors">
-              DCS.LOL API
-            </Link>
+                  All server information & invite link creation powered by{" "}
+                  <a href="https://dcs.lol" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                    DCS.LOL API
+                  </a>
+                </p>
               </div>
             </TabsContent>
 
             <TabsContent value="links" className="space-y-4 mt-4">
               <div className="space-y-2">
-                <Label htmlFor="invite" className="flex items-center gap-2">
-                  <Link className="h-4 w-4" />
-                  Discord Invite Link
+                <Label htmlFor="discord-invite" className="flex items-center gap-2">
+                  <LinkIcon className="h-4 w-4" />
+                  Discord Invite Link *
                 </Label>
                 <div className="flex gap-2">
                   <Input
-                    id="invite"
+                    id="discord-invite"
                     type="url"
-                    value={inviteLink}
-                    onChange={(e) => setInviteLink(e.target.value)}
-                    placeholder="https://discord.gg/..."
+                    value={discordInviteLink}
+                    onChange={(e) => setDiscordInviteLink(e.target.value)}
+                    placeholder="https://discord.gg/your-invite"
                     className="flex-1"
+                    required
                   />
                   <Button
                     type="button"
                     variant="outline"
                     onClick={handleFetchFromDiscord}
                     disabled={fetching || !inviteCode}
+                    title="Fetch server info"
                   >
                     {fetching ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : serverInfoFetched ? (
+                      <Check className="h-4 w-4 text-success" />
                     ) : (
                       <RefreshCw className="h-4 w-4" />
                     )}
                   </Button>
                 </div>
-                {dcsLink && (
-                  <p className="text-xs text-success">
-                    DCS.lol link: <code className="bg-success/20 px-1 rounded">{dcsLink}</code>
+                {serverInfoFetched && (
+                  <p className="text-xs text-success flex items-center gap-1">
+                    <Check className="h-3 w-3" />
+                    Server info fetched: {memberCount.toLocaleString()} members, {onlineCount.toLocaleString()} online
                   </p>
                 )}
+              </div>
+
+              {/* DCS Link Generation */}
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  DCS.lol Short Link
+                </Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={dcsLink || (inviteCode ? `https://dcs.lol/${inviteCode}` : "")}
+                    placeholder="Will be generated..."
+                    readOnly
+                    className="flex-1 bg-muted"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleCreateDcsLink}
+                    disabled={creatingDcsLink || !discordInviteLink}
+                    title="Generate custom DCS link"
+                  >
+                    {creatingDcsLink ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : dcsShortCode ? (
+                      <Check className="h-4 w-4 text-success" />
+                    ) : (
+                      "Generate"
+                    )}
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  This short link will be used for server invites
+                </p>
               </div>
 
               <AvatarUpload
@@ -289,7 +400,6 @@ export function CreateServerDialog({ open, onOpenChange, onSuccess }: CreateServ
           </Tabs>
 
           <div className="flex justify-end gap-2 pt-4 border-t">
-          
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>

@@ -130,6 +130,10 @@ export function useCreateServer() {
       description?: string;
       avatar_url?: string;
       invite_link?: string;
+      dcs_short_code?: string;
+      guild_id?: string;
+      member_count?: number;
+      online_count?: number;
       age_rating: AgeRating;
       webhook_url?: string;
       webhook_on_milestone?: boolean;

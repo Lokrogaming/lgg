@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 
 export interface DcsServerInfo {
   name: string;
@@ -10,6 +10,13 @@ export interface DcsServerInfo {
   onlineCount: number;
   guildId: string;
   inviteCode: string;
+}
+
+export interface DcsLinkResponse {
+  id: string;
+  shortCode: string;
+  url: string;
+  shortUrl: string;
 }
 
 // Extract invite code from Discord invite link
@@ -36,11 +43,44 @@ export function extractInviteCode(inviteLink: string): string | null {
 }
 
 // Generate dcs.lol short link from invite code
-export function generateDcsLink(inviteCode: string): string {
-  return `https://dcs.lol/${inviteCode}`;
+export function generateDcsLink(shortCode: string): string {
+  return `https://dcs.lol/${shortCode}`;
 }
 
-// Fetch server info from dcs.lol API
+// Create a DCS.lol short link from Discord invite URL
+export async function createDcsLink(discordUrl: string, customId?: string): Promise<DcsLinkResponse | null> {
+  try {
+    const response = await fetch("https://dcs.lol/api/v1/links", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        url: discordUrl,
+        customId: customId || undefined,
+      }),
+    });
+    
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      console.error("Failed to create DCS link:", error);
+      return null;
+    }
+    
+    const data = await response.json();
+    return {
+      id: data.id || "",
+      shortCode: data.shortCode || data.customId || "",
+      url: data.url || discordUrl,
+      shortUrl: data.shortUrl || `https://dcs.lol/${data.shortCode || data.customId}`,
+    };
+  } catch (error) {
+    console.error("Failed to create DCS link:", error);
+    return null;
+  }
+}
+
+// Fetch server info from dcs.lol API using invite code
 export async function fetchDcsServerInfo(inviteCode: string): Promise<DcsServerInfo | null> {
   try {
     const response = await fetch(`https://dcs.lol/api/v1/discord/${inviteCode}`);
@@ -51,7 +91,7 @@ export async function fetchDcsServerInfo(inviteCode: string): Promise<DcsServerI
     return {
       name: data.guild?.name || "",
       description: data.guild?.description || "",
-      icon: data.guild?.icon ? `https://dcs.lol/proxy/discord/icons/${data.guild.id}/${data.guild.icon}` : null,
+      icon: data.guild?.icon ? `https://cdn.discordapp.com/icons/${data.guild.id}/${data.guild.icon}.png` : null,
       splash: data.guild?.splash || null,
       banner: data.guild?.banner || null,
       memberCount: data.approximate_member_count || 0,
@@ -77,7 +117,15 @@ export function useDcsServerInfo(inviteCode: string | null) {
   });
 }
 
-// Get Discord icon URL via dcs.lol proxy (CSP-friendly)
+export function useCreateDcsLink() {
+  return useMutation({
+    mutationFn: async ({ discordUrl, customId }: { discordUrl: string; customId?: string }) => {
+      return createDcsLink(discordUrl, customId);
+    },
+  });
+}
+
+// Get Discord icon URL 
 export function getDiscordIconUrl(guildId: string, iconHash: string): string {
-  return `https://dcs.lol/proxy/discord/icons/${guildId}/${iconHash}`;
+  return `https://cdn.discordapp.com/icons/${guildId}/${iconHash}.png`;
 }

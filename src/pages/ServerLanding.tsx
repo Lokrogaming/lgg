@@ -70,8 +70,8 @@ export default function ServerLanding() {
     enabled: !!serverId,
   });
 
-  const inviteCode = server?.invite_link ? extractInviteCode(server.invite_link) : null;
-  const { data: dcsInfo } = useDcsServerInfo(inviteCode);
+  const inviteCode = server?.dcs_short_code || (server?.invite_link ? extractInviteCode(server.invite_link) : null);
+  const { data: dcsInfo } = useDcsServerInfo(server?.invite_link ? extractInviteCode(server.invite_link) : null);
 
   const hasVoted = userVotes.includes(server?.id || "");
   const customData = (server?.custom_landing_data || {}) as CustomLandingData;
@@ -108,7 +108,9 @@ export default function ServerLanding() {
   const memberCount = dcsInfo?.memberCount || server.member_count;
   const onlineCount = dcsInfo?.onlineCount || server.online_count || 0;
   const avatarUrl = dcsInfo?.icon || server.avatar_url;
-  const dcsLink = inviteCode ? `https://dcs.lol/${inviteCode}` : server.invite_link;
+  const dcsLink = server.dcs_short_code 
+    ? `https://dcs.lol/${server.dcs_short_code}` 
+    : (inviteCode ? `https://dcs.lol/${inviteCode}` : server.invite_link);
 
   // Custom styles for fully customized landing pages
   const customStyles: React.CSSProperties = hasCustomLanding ? {
@@ -244,13 +246,13 @@ export default function ServerLanding() {
           </div>
 
           {/* DCS.lol Link */}
-          {inviteCode && (
+          {(server.dcs_short_code || inviteCode) && (
             <div className="gaming-border p-6 text-center">
               <p className="text-sm text-muted-foreground mb-2">
                 Quick join link powered by DCS.lol
               </p>
               <code className="text-lg font-mono text-primary bg-primary/10 px-4 py-2 rounded-lg">
-                dcs.lol/{inviteCode}
+                dcs.lol/{server.dcs_short_code || inviteCode}
               </code>
             </div>
           )}

@@ -69,8 +69,8 @@ export function ServerCard({ server, index = 0, showActions, showCredits, onEdit
   const voteForServer = useVoteForServer();
   
   // Fetch live data from dcs.lol
-  const inviteCode = server.invite_link ? extractInviteCode(server.invite_link) : null;
-  const { data: dcsInfo } = useDcsServerInfo(inviteCode);
+  const discordInviteCode = server.invite_link ? extractInviteCode(server.invite_link) : null;
+  const { data: dcsInfo } = useDcsServerInfo(discordInviteCode);
   
   const hasVoted = userVotes.includes(server.id);
   const themeData = themeStyles[server.theme] || themeStyles.default;
@@ -80,7 +80,11 @@ export function ServerCard({ server, index = 0, showActions, showCredits, onEdit
   const memberCount = dcsInfo?.memberCount || server.member_count;
   const onlineCount = dcsInfo?.onlineCount || server.online_count || 0;
   const avatarUrl = dcsInfo?.icon || server.avatar_url;
-  const dcsLink = inviteCode ? `https://dcs.lol/${inviteCode}` : server.invite_link;
+  
+  // Use DCS short code if available, otherwise fall back to Discord invite code
+  const dcsLink = server.dcs_short_code 
+    ? `https://dcs.lol/${server.dcs_short_code}` 
+    : (discordInviteCode ? `https://dcs.lol/${discordInviteCode}` : server.invite_link);
 
   const handleVote = (e: React.MouseEvent) => {
     e.preventDefault();

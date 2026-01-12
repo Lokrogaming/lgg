@@ -1,1 +1,4 @@
 project_id = "seygjhdywxmdopkwlrfu"
+
+[functions.expire-bumps]
+verify_jwt = false

@@ -57,7 +57,7 @@ export async function createDcsLink(discordUrl: string, customId?: string): Prom
       },
       body: JSON.stringify({
         url: discordUrl,
-        customId: customId || undefined,
+        customId: customId,
       }),
     });
     

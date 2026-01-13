@@ -121,7 +121,7 @@ export function CreateServerDialog({ open, onOpenChange, onSuccess }: CreateServ
       .replace(/[^a-z0-9_-]/g, "")
       .substring(0, 32);
 
-    // Sicherheitsnetz für die API
+    
     if (customId.length < 3) {
       customId = undefined;
     }
@@ -144,16 +144,35 @@ export function CreateServerDialog({ open, onOpenChange, onSuccess }: CreateServ
 
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Ensure we have a DCS link if we have a Discord invite
-    let finalDcsShortCode = dcsShortCode;
-    if (discordInviteLink && !dcsShortCode) {
-      const code = extractInviteCode(discordInviteLink);
-      if (code) {
-        finalDcsShortCode = code;
-      }
+  e.preventDefault();
+
+  // Ensure we have a DCS link if we have a Discord invite
+  let finalDcsShortCode = dcsShortCode;
+
+  if (discordInviteLink && !dcsShortCode) {
+    const inviteCode = extractInviteCode(discordInviteLink);
+
+    if (inviteCode) {
+      const serverPart = name
+        .toLowerCase()
+        .replace(/[^a-z0-9_-]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+
+      const combined = `${serverPart}-${inviteCode}`
+        .toLowerCase()
+        .replace(/[^a-z0-9_-]/g, "")
+        .substring(0, 32);
+
+      
+      finalDcsShortCode = combined.length >= 3
+        ? combined
+        : inviteCode;
     }
+  }
+
+ 
+};
+
 
     await createServer.mutateAsync({
       name,

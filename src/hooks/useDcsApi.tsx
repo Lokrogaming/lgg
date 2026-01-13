@@ -62,6 +62,11 @@ export async function createDcsLink(discordUrl: string, customId?: string): Prom
     });
     
     if (!response.ok) {
+      console.error("Status:", response.status, await response.text());
+      return null;
+    }
+
+    if (!response.ok) {
       const error = await response.json().catch(() => ({}));
       console.error("Failed to create DCS link:", error);
       return null;

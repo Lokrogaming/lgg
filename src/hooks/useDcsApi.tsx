@@ -86,17 +86,23 @@ export async function fetchDcsServerInfo(inviteCode: string): Promise<DcsServerI
     const response = await fetch(`https://dcs.lol/api/v1/discord/${inviteCode}`);
     if (!response.ok) return null;
     
-    const data = await response.json();
+    const json = await response.json();
+    
+    // Handle new API response format: { success: true, data: { server: {...}, memberCount, onlineCount } }
+    if (!json.success ||!json.data) return null;
+    
+    const data = json.data;
+    const server = data.server;
     
     return {
-      name: data.guild?.name || "",
-      description: data.guild?.description || "",
-      icon: data.guild?.icon ? `https://cdn.discordapp.com/icons/${data.guild.id}/${data.guild.icon}.png` : null,
-      splash: data.guild?.splash || null,
-      banner: data.guild?.banner || null,
-      memberCount: data.approximate_member_count || 0,
-      onlineCount: data.approximate_presence_count || 0,
-      guildId: data.guild?.id || "",
+      name: server?.name || "",
+      description: server?.description || "",
+      icon: server?.icon || null, // API now returns full URL
+      splash: server?.splash || null,
+      banner: server?.banner || null,
+      memberCount: data.memberCount || 0,
+      onlineCount: data.onlineCount || 0,
+      guildId: server?.id || "",
       inviteCode: inviteCode,
     };
   } catch (error) {

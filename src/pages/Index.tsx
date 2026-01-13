@@ -177,7 +177,7 @@ export default function Index() {
             </Link>
             </div>
             <p className="text-sm text-muted-foreground">
-              © 2024 LGG. All rights reserved.
+              © 2026 LGG. All rights reserved.
             </p>
           </div>
         </div>

@@ -104,13 +104,27 @@ export function CreateServerDialog({ open, onOpenChange, onSuccess }: CreateServ
 
   setCreatingDcsLink(true);
   try {
-    const rawId = name
+    const inviteCode = extractInviteCode(discordInviteLink);
+
+    if (!inviteCode) {
+      toast.error("Invalid Discord invite link");
+      return;
+    }
+
+    const serverPart = name
       .toLowerCase()
       .replace(/[^a-z0-9_-]+/g, "-")
-      .replace(/^-+|-+$/g, "")
+      .replace(/^-+|-+$/g, "");
+
+    let customId = `${serverPart}-${inviteCode}`
+      .toLowerCase()
+      .replace(/[^a-z0-9_-]/g, "")
       .substring(0, 32);
 
-    const customId = rawId.length >= 3 ? rawId : undefined;
+    // Sicherheitsnetz für die API
+    if (customId.length < 3) {
+      customId = undefined;
+    }
 
     const result = await createDcsLink(discordInviteLink, customId);
 
@@ -127,6 +141,7 @@ export function CreateServerDialog({ open, onOpenChange, onSuccess }: CreateServ
     setCreatingDcsLink(false);
   }
 };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

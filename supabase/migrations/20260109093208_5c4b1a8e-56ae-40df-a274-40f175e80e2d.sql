@@ -35,6 +35,7 @@ CREATE TABLE public.servers (
   ai_age_rating age_rating,
   member_count INTEGER DEFAULT 0,
   is_verified BOOLEAN DEFAULT false,
+  is_pinned BOOLEAN DEFAULT false,
   webhook_url TEXT,
   webhook_on_milestone BOOLEAN DEFAULT false,
   webhook_on_join BOOLEAN DEFAULT false,

@@ -97,42 +97,36 @@ export function CreateServerDialog({ open, onOpenChange, onSuccess }: CreateServ
   };
 
   const handleCreateDcsLink = async () => {
-    if (!discordInviteLink) {
-      toast.error("Please enter a Discord invite link first");
-      return;
-    }
+  if (!discordInviteLink) {
+    toast.error("Please enter a Discord invite link first");
+    return;
+  }
 
-    setCreatingDcsLink(true);
-    try {
-      // Create a short code based on server name (lowercase, no spaces)
-      const customId = name
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-|-$/g, "")
-        .substring(0, 20) || undefined;
+  setCreatingDcsLink(true);
+  try {
+    const rawId = name
+      .toLowerCase()
+      .replace(/[^a-z0-9_-]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .substring(0, 32);
 
-      const result = await createDcsLink(discordInviteLink, customId);
-      if (result) {
-        setDcsShortCode(result.shortCode);
-        setDcsLink(result.shortUrl);
-        toast.success("DCS.lol link created!");
-      } else {
-        // Fallback: use the invite code directly
-        const code = extractInviteCode(discordInviteLink);
-        if (code) {
-          setDcsShortCode(code);
-          setDcsLink(`https://dcs.lol/${code}`);
-          toast.info("Using Discord invite code as DCS link");
-        } else {
-          toast.error("Could not create DCS link");
-        }
-      }
-    } catch {
-      toast.error("Failed to create DCS link");
-    } finally {
-      setCreatingDcsLink(false);
+    const customId = rawId.length >= 3 ? rawId : undefined;
+
+    const result = await createDcsLink(discordInviteLink, customId);
+
+    if (result) {
+      setDcsShortCode(result.shortCode);
+      setDcsLink(result.shortUrl);
+      toast.success("DCS.lol link created!");
+    } else {
+      toast.error("Could not create DCS link");
     }
-  };
+  } catch {
+    toast.error("Failed to create DCS link");
+  } finally {
+    setCreatingDcsLink(false);
+  }
+};
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

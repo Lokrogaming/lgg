@@ -39,6 +39,35 @@ interface CustomLandingData {
   customCss?: string;
 }
 
+interface ThemeData {
+  background?: string;
+  borderColor?: string;
+  fontFamily?: string;
+  accentColor?: string;
+}
+
+const themeStyles: Record<string, ThemeData> = {
+  default: {},
+  neon: {
+    background: "linear-gradient(135deg, rgba(236, 72, 153, 0.15), rgba(6, 182, 212, 0.15))",
+    borderColor: "rgba(236, 72, 153, 0.5)",
+    fontFamily: "Orbitron, sans-serif",
+    accentColor: "#ec4899",
+  },
+  gold: {
+    background: "linear-gradient(135deg, rgba(234, 179, 8, 0.15), rgba(217, 119, 6, 0.15))",
+    borderColor: "rgba(234, 179, 8, 0.5)",
+    fontFamily: "Cinzel, serif",
+    accentColor: "#eab308",
+  },
+  galaxy: {
+    background: "linear-gradient(135deg, rgba(147, 51, 234, 0.15), rgba(79, 70, 229, 0.15))",
+    borderColor: "rgba(147, 51, 234, 0.5)",
+    fontFamily: "Space Grotesk, sans-serif",
+    accentColor: "#9333ea",
+  },
+};
+
 export default function ServerLanding() {
   const { serverId } = useParams<{ serverId: string }>();
   const { user } = useAuth();
@@ -76,6 +105,10 @@ export default function ServerLanding() {
   const hasVoted = userVotes.includes(server?.id || "");
   const customData = (server?.custom_landing_data || {}) as CustomLandingData;
   const hasCustomLanding = server?.has_custom_landing && customData;
+  
+  // Get theme data (purchased themes like neon, gold, galaxy)
+  const themeData = themeStyles[server?.theme || "default"] || themeStyles.default;
+  const hasTheme = server?.theme && server.theme !== "default";
 
   const handleVote = () => {
     if (!user || !server) return;
@@ -112,7 +145,7 @@ export default function ServerLanding() {
     ? `https://dcs.lol/${server.dcs_short_code}` 
     : (inviteCode ? `https://dcs.lol/${inviteCode}` : server.invite_link);
 
-  // Custom styles for fully customized landing pages
+  // Custom styles for fully customized landing pages OR purchased themes
   const customStyles: React.CSSProperties = hasCustomLanding ? {
     backgroundColor: customData.backgroundColor,
     backgroundImage: customData.backgroundImage ? `url(${customData.backgroundImage})` : undefined,
@@ -120,13 +153,20 @@ export default function ServerLanding() {
     backgroundPosition: "center",
     color: customData.textColor,
     fontFamily: customData.fontFamily,
+  } : hasTheme ? {
+    background: themeData.background,
+    fontFamily: themeData.fontFamily,
   } : {};
+
+  // Accent color for themed elements
+  const accentColor = hasCustomLanding ? customData.accentColor : hasTheme ? themeData.accentColor : undefined;
+  const borderColor = hasTheme ? themeData.borderColor : undefined;
 
   return (
     <div 
       className={cn(
         "min-h-screen",
-        !hasCustomLanding && "bg-background"
+        !hasCustomLanding && !hasTheme && "bg-background"
       )}
       style={customStyles}
     >
@@ -144,7 +184,10 @@ export default function ServerLanding() {
       <section className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           {/* Server Header */}
-          <div className="gaming-border p-8 text-center mb-8">
+          <div 
+            className="gaming-border p-8 text-center mb-8"
+            style={borderColor ? { borderColor } : undefined}
+          >
             {/* Status badges */}
             <div className="flex justify-center gap-2 mb-6">
               {server.is_promoted && (
@@ -168,9 +211,15 @@ export default function ServerLanding() {
             </div>
 
             {/* Avatar */}
-            <Avatar className="h-32 w-32 mx-auto mb-6 border-4 border-primary/30">
+            <Avatar 
+              className="h-32 w-32 mx-auto mb-6 border-4"
+              style={{ borderColor: accentColor || undefined }}
+            >
               <AvatarImage src={avatarUrl || undefined} alt={server.name} />
-              <AvatarFallback className="bg-primary/20 text-primary text-4xl font-bold">
+              <AvatarFallback 
+                className="text-4xl font-bold"
+                style={accentColor ? { backgroundColor: `${accentColor}20`, color: accentColor } : undefined}
+              >
                 {server.name.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
@@ -188,7 +237,10 @@ export default function ServerLanding() {
             {/* Stats */}
             <div className="flex justify-center gap-8 mb-6">
               <div className="text-center">
-                <div className="flex items-center justify-center gap-2 text-3xl font-bold text-primary">
+                <div 
+                  className="flex items-center justify-center gap-2 text-3xl font-bold"
+                  style={accentColor ? { color: accentColor } : undefined}
+                >
                   <Users className="h-6 w-6" />
                   {memberCount.toLocaleString()}
                 </div>
@@ -247,19 +299,26 @@ export default function ServerLanding() {
 
           {/* DCS.lol Link */}
           {(server.dcs_short_code || inviteCode) && (
-            <div className="gaming-border p-6 text-center">
+            <div 
+              className="gaming-border p-6 text-center"
+              style={borderColor ? { borderColor } : undefined}
+            >
               <p className="text-sm text-muted-foreground mb-2">
                 Quick join link powered by{" "}
                 <a 
                   href="https://dcs.lol" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-primary hover:underline"
+                  className="hover:underline"
+                  style={accentColor ? { color: accentColor } : undefined}
                 >
                   DCS.lol
                 </a>
               </p>
-              <code className="text-lg font-mono text-primary bg-primary/10 px-4 py-2 rounded-lg">
+              <code 
+                className="text-lg font-mono px-4 py-2 rounded-lg"
+                style={accentColor ? { color: accentColor, backgroundColor: `${accentColor}15` } : undefined}
+              >
                 dcs.lol/{server.dcs_short_code || inviteCode}
               </code>
             </div>

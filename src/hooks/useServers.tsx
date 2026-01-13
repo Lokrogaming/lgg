@@ -22,6 +22,7 @@ export interface Server {
   milestone_threshold: number;
   credits: number;
   is_promoted: boolean;
+  is_pinned: boolean;
   is_bumped: boolean;
   bump_expires_at: string | null;
   theme: string;
@@ -70,8 +71,10 @@ export function useServers() {
         is_bumped: server.is_bumped && server.bump_expires_at && new Date(server.bump_expires_at) > new Date()
       }));
 
-      // Sort: promoted first, then bumped, then by member count
+      // Sort: pinned first, then promoted, then bumped, then by member count
       return serversWithVotes.sort((a, b) => {
+        if (a.is_pinned && !b.is_pinned) return -1;
+        if (!a.is_pinned && b.is_pinned) return 1;
         if (a.is_promoted && !b.is_promoted) return -1;
         if (!a.is_promoted && b.is_promoted) return 1;
         if (a.is_bumped && !b.is_bumped) return -1;

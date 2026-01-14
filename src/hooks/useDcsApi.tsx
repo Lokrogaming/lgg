@@ -10,6 +10,8 @@ export interface DcsServerInfo {
   onlineCount: number;
   guildId: string;
   inviteCode: string;
+  inviterId: number;
+  inviterName: string;
 }
 
 export interface DcsLinkResponse {
@@ -109,6 +111,8 @@ export async function fetchDcsServerInfo(inviteCode: string): Promise<DcsServerI
       onlineCount: data.onlineCount || 0,
       guildId: server?.id || "",
       inviteCode: inviteCode,
+      inviterId: data.inviter.id,
+      inviterName: data.inviter.username,
     };
   } catch (error) {
     console.error("Failed to fetch DCS server info:", error);

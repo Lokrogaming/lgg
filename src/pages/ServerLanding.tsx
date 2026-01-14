@@ -317,7 +317,7 @@ export default function ServerLanding() {
                 className="text-lg font-mono px-4 py-2 rounded-lg"
                 style={accentColor ? { color: accentColor, backgroundColor: `${accentColor}15` } : undefined}
               >
-                discord.gg/{server.invite_link || inviteCode}
+                {server.invite_link || inviteCode}
               </code>
             </div>
           )}

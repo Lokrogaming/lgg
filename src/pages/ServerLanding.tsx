@@ -296,7 +296,7 @@ export default function ServerLanding() {
           </div>
 
           {/* DCS.lol Link */}
-          {(server.dcs_short_code || inviteCode) && (
+          {(server.invite_link || inviteCode) && (
             <div 
               className="gaming-border p-6 text-center"
               style={borderColor ? { borderColor } : undefined}
@@ -317,7 +317,7 @@ export default function ServerLanding() {
                 className="text-lg font-mono px-4 py-2 rounded-lg"
                 style={accentColor ? { color: accentColor, backgroundColor: `${accentColor}15` } : undefined}
               >
-                dcs.lol/{server.dcs_short_code || inviteCode}
+                discord.gg/{server.invite_link || inviteCode}
               </code>
             </div>
           )}

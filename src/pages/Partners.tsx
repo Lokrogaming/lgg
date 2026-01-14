@@ -2,7 +2,7 @@ import { Header } from "@/components/layout/Header";
 import partners from "@/data/partner.json";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, Heart } from "lucide-react";
+import { Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const partnerTypeColors: Record<string, string> = {

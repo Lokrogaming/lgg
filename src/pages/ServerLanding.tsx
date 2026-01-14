@@ -319,7 +319,7 @@ export default function ServerLanding() {
                 {inviterId}
               </code>
             </div>
-      </div>
+      
           )}
 
           {/* DCS.lol Link */}

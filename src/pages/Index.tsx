@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Header } from "@/components/layout/Header";
 import { ServerCard } from "@/components/servers/ServerCard";
 import { useServers } from "@/hooks/useServers";
+import { useAuth } from "@/hooks/useAuth"
 import { Users, Shield, Gamepad2, Sparkles, ArrowRight } from "lucide-react";
 
 export default function Index() {

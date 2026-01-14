@@ -80,8 +80,8 @@ export function Header() {
                   </Avatar>
                   <div className="flex flex-col">
                     <span className="text-sm font-medium truncate max-w-[140px]">
-  {user.user_metadata?.username ?? user.email}
-</span>
+                      {user.username}
+                    </span>
                     {isSiteOwner && (
                       <span className="text-xs text-warning">
                         Site Owner

@@ -303,7 +303,7 @@ export default function ServerLanding() {
               className="gaming-border p-6 text-center mb-6"
               style={borderColor ? { borderColor } : undefined}
             >
-              <h1 className="text-lg text-muted-foreground mb-2">Inviter</h1>
+              <h1 className="text-lg text-foreground mb-2">Invite by</h1>
               <p className="text-sm text-muted-foreground mb-2">Name</p>
               <code 
                 className="text-lg font-mono px-4 py-2 rounded-lg"

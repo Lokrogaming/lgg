@@ -8,6 +8,7 @@ import { Users, Shield, Gamepad2, Sparkles, ArrowRight } from "lucide-react";
 export default function Index() {
   const { servers, loading } = useServers();
   const featuredServers = servers.slice(0, 6);
+  const { user } = useAuth();
 
   return (
     <div className="min-h-screen bg-background">
@@ -30,6 +31,10 @@ export default function Index() {
             <h1 className="mb-6 text-4xl font-bold tracking-tight sm:text-5xl lg:text-7xl">
               <span className="text-gradient-primary">Unite</span> Your Gaming Community
             </h1>
+            
+            <p className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground sm:text-xl">
+              Discover and join amazing Discord servers. Create your own community and connect with gamers worldwide through LGG's trusted network.
+            </p>
             
             <p className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground sm:text-xl">
               Discover and join amazing Discord servers. Create your own community and connect with gamers worldwide through LGG's trusted network.

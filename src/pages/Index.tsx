@@ -13,7 +13,7 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+           
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-hero py-20 lg:py-32">
         <div className="absolute inset-0 overflow-hidden">

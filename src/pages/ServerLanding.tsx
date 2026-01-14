@@ -66,7 +66,24 @@ const themeStyles: Record<string, ThemeData> = {
     fontFamily: "Space Grotesk, sans-serif",
     accentColor: "#9333ea",
   },
+
+  // Neues Theme: Blood Moon
+  bloodMoon: {
+    background: "linear-gradient(135deg, rgba(139, 0, 0, 0.15), rgba(220, 20, 60, 0.15))",
+    borderColor: "rgba(220, 20, 60, 0.5)",
+    fontFamily: "Creepster, cursive",
+    accentColor: "#dc143c",
+  },
+
+  // Neues Theme: Dark Cosmic
+  darkCosmic: {
+    background: "linear-gradient(135deg, rgba(25, 25, 112, 0.15), rgba(0, 0, 0, 0.15))",
+    borderColor: "rgba(72, 61, 139, 0.5)",
+    fontFamily: "Orbitron, sans-serif",
+    accentColor: "#483d8b",
+  },
 };
+
 
 export default function ServerLanding() {
   const { serverId } = useParams<{ serverId: string }>();

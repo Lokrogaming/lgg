@@ -36,7 +36,7 @@ export default function Index() {
             <p className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground sm:text-xl">
               Discover and join amazing Discord servers. Create your own community and connect with gamers worldwide through LGG's trusted network.
             </p>
-            <p className="mx-auto mb-10 max-w-2xl text-sm text-muted-foreground sm:text-xl">
+            <p className="mx-auto mb-10 max-w-2xl text-sm text-muted-foreground sm:text-m">
               Discover and join amazing Discord servers. Create your own community and connect with gamers worldwide through LGG's trusted network.
             </p>
             

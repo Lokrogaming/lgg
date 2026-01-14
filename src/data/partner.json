@@ -5,9 +5,8 @@
   "description": "Official main partner server.",
   "type": "discord",
   "tags": ["gaming", "community", "official"],
-  "inviteUrl": "https://discord.gg/example",
-  "landingPageUrl": "https://lokrogaming.de"
-}
+  "inviteUrl": "/server/331ce379-0f57-4558-8377-514a9264da74",
+  "landingPageUrl": "/server/331ce379-0f57-4558-8377-514a9264da74"
 ,
   {
   "id": "example-site",

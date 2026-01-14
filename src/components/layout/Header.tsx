@@ -65,7 +65,7 @@ export function Header() {
                   <Avatar className="h-10 w-10 border-2 border-primary/50">
                     <AvatarImage src={user.user_metadata?.avatar_url} />
                     <AvatarFallback className="bg-primary/20 text-primary">
-                      {user.username?.charAt(0).toUpperCase()}
+                      {user.email?.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                 </Button>

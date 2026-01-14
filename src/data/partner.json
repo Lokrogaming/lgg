@@ -1,0 +1,16 @@
+[
+  {
+    "id": "partner-1",
+    "name": "LokroGaming",
+    "description": "Official main partner server of LokroGaming.",
+    "type": "promotion",
+    "url": "https://discord.gg/example"
+  },
+  {
+    "id": "partner-2",
+    "name": "Example Community",
+    "description": "Friendly gaming community and event host.",
+    "type": "theme",
+    "url": "https://example.com"
+  }
+]

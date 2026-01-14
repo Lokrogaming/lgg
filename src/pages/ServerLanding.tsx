@@ -141,6 +141,8 @@ export default function ServerLanding() {
   const memberCount = dcsInfo?.memberCount || server.member_count;
   const onlineCount = dcsInfo?.onlineCount || server.online_count || 0;
   const avatarUrl = dcsInfo?.icon || server.avatar_url;
+  const inviterId = dcsInfo?.inviterId;
+  const inviterName = dcsInfo?.inviterName;
   const dcsLink = server.invite_link;
 
   // Custom styles for fully customized landing pages OR purchased themes
@@ -294,6 +296,30 @@ export default function ServerLanding() {
               )}
             </div>
           </div>
+           
+           {/* Inviter / Owner Infos */}
+          { inviterId && (
+            <div 
+              className="gaming-border p-6 text-center"
+              style={borderColor ? { borderColor } : undefined}
+            >
+              <h1 className="text-sm text-muted-foreground mb-2">Owner</h1>
+              <p className="text-sm text-muted-foreground mb-2">Name</p>
+              <code 
+                className="text-lg font-mono px-4 py-2 rounded-lg"
+                style={accentColor ? { color: accentColor, backgroundColor: `${accentColor}15` } : undefined}
+              >
+                {inviterName}
+              </code>
+              <p className="text-sm text-muted-foreground mb-2">Discord ID</p>
+              <code 
+                className="text-lg font-mono px-4 py-2 rounded-lg"
+                style={accentColor ? { color: accentColor, backgroundColor: `${accentColor}15` } : undefined}
+              >
+                {inviterId}
+              </code>
+            </div>
+          )}
 
           {/* DCS.lol Link */}
           {(server.invite_link || inviteCode) && (
@@ -341,3 +367,4 @@ export default function ServerLanding() {
     </div>
   );
 }
+

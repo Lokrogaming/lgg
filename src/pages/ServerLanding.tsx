@@ -141,9 +141,7 @@ export default function ServerLanding() {
   const memberCount = dcsInfo?.memberCount || server.member_count;
   const onlineCount = dcsInfo?.onlineCount || server.online_count || 0;
   const avatarUrl = dcsInfo?.icon || server.avatar_url;
-  const dcsLink = server.dcs_short_code 
-    ? `https://dcs.lol/${server.dcs_short_code}` 
-    : (inviteCode ? `https://dcs.lol/${inviteCode}` : server.invite_link);
+  const dcsLink = server.invite_link;
 
   // Custom styles for fully customized landing pages OR purchased themes
   const customStyles: React.CSSProperties = hasCustomLanding ? {

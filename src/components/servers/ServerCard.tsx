@@ -82,9 +82,8 @@ export function ServerCard({ server, index = 0, showActions, showCredits, onEdit
   const avatarUrl = dcsInfo?.icon || server.avatar_url;
   
   // Use DCS short code if available, otherwise fall back to Discord invite code
-  const dcsLink = server.dcs_short_code 
-    ? `https://dcs.lol/${server.dcs_short_code}` 
-    : (discordInviteCode ? `https://dcs.lol/${discordInviteCode}` : server.invite_link);
+  const dcsLink = server.invite_link;
+    
 
   const handleVote = (e: React.MouseEvent) => {
     e.preventDefault();

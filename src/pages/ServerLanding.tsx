@@ -303,7 +303,7 @@ export default function ServerLanding() {
               className="gaming-border p-6 text-center"
               style={borderColor ? { borderColor } : undefined}
             >
-              <h1 className="text-sm text-muted-foreground mb-2">Owner</h1>
+              <h1 className="text-lg text-muted-foreground mb-2">Owner</h1>
               <p className="text-sm text-muted-foreground mb-2">Name</p>
               <code 
                 className="text-lg font-mono px-4 py-2 rounded-lg"

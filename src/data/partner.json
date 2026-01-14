@@ -9,12 +9,13 @@
   "landingPageUrl": "/server/331ce379-0f57-4558-8377-514a9264da74"
 ,
   {
-  "id": "example-site",
-  "name": "Example Website",
-  "description": "Helpful tools and resources.",
-  "type": "website",
-  "tags": ["tools", "web"],
-  "url": "https://example.com"
+  "id": "tovaria",
+  "name": "TOVARIAMC",
+  "description": "PvP Network",
+  "type": "discord",
+  "tags": ["MC", "PVP"],
+  "inviteUrl": "/server/87065bc0-4a1b-49b0-80e2-90ed2c394f13",
+  "landingPageUrl": "https://lgg.lovable.app/server/87065bc0-4a1b-49b0-80e2-90ed2c394f13"
 }
 
 ]

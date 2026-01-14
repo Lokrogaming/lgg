@@ -48,7 +48,7 @@ export default function Announcements() {
           </div>
 
           {/* Bottom Note */}
-          <div className="mt-12 gaming-border p-6 bg-warning/5 border-warning/30">
+          <div className="mt-12 gaming-border p-6 bg-warning/5 border-warning/30 hover:glow-secondary transition-all duration-300 animate-fade-in">
             <div className="flex items-start gap-4">
               <Shield className="h-6 w-6 text-warning flex-shrink-0 mt-0.5" />
               <div>

@@ -300,7 +300,7 @@ export default function ServerLanding() {
            {/* Inviter / Owner Infos */}
           { inviterId && (
             <div 
-              className="gaming-border p-6 text-center"
+              className="gaming-border p-6 text-center mb-6"
               style={borderColor ? { borderColor } : undefined}
             >
               <h1 className="text-lg text-muted-foreground mb-2">Inviter</h1>
@@ -325,7 +325,7 @@ export default function ServerLanding() {
           {/* DCS.lol Link */}
           {(server.invite_link || inviteCode) && (
             <div 
-              className="gaming-border p-6 text-center"
+              className="gaming-border p-6 text-center mb-6"
               style={borderColor ? { borderColor } : undefined}
             >
               <p className="text-sm text-muted-foreground mb-2">

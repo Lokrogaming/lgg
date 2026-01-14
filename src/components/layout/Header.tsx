@@ -177,37 +177,39 @@ export function Header() {
              News
             </Link>
             {user ? (
-              
-                <Link 
-                  to="/dashboard" 
-                  className="px-4 py-2 rounded-lg hover:bg-secondary transition-colors"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Dashboard
-                </Link>
-                <Button 
-                  variant="destructive" 
-                  className="mt-2"
-                  onClick={() => {
-                    handleSignOut();
-                    setMobileMenuOpen(false);
-                  }}
-                >
-                  Sign Out
-                </Button>
-              </>
-            ) : (
-              <Button 
-                variant="hero" 
-                className="mt-2"
-                onClick={() => {
-                  navigate("/auth");
-                  setMobileMenuOpen(false);
-                }}
-              >
-                Sign In
-              </Button>
-            )}
+  <>
+    <Link 
+      to="/dashboard" 
+      className="px-4 py-2 rounded-lg hover:bg-secondary transition-colors"
+      onClick={() => setMobileMenuOpen(false)}
+    >
+      Dashboard
+    </Link>
+
+    <Button 
+      variant="destructive" 
+      className="mt-2"
+      onClick={() => {
+        handleSignOut();
+        setMobileMenuOpen(false);
+      }}
+    >
+      Sign Out
+    </Button>
+  </>
+) : (
+  <Button 
+    variant="hero" 
+    className="mt-2"
+    onClick={() => {
+      navigate("/auth");
+      setMobileMenuOpen(false);
+    }}
+  >
+    Sign In
+  </Button>
+)}
+
           </nav>
         </div>
       )}

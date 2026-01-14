@@ -144,35 +144,28 @@ export function CreateServerDialog({ open, onOpenChange, onSuccess }: CreateServ
 
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  // Ensure we have a DCS link if we have a Discord invite
-  let finalDcsShortCode = dcsShortCode;
+    // Ensure we have a DCS link if we have a Discord invite
+    let finalDcsShortCode = dcsShortCode;
 
-  if (discordInviteLink && !dcsShortCode) {
-    const inviteCode = extractInviteCode(discordInviteLink);
+    if (discordInviteLink && !dcsShortCode) {
+      const inviteCode = extractInviteCode(discordInviteLink);
 
-    if (inviteCode) {
-      const serverPart = name
-        .toLowerCase()
-        .replace(/[^a-z0-9_-]+/g, "-")
-        .replace(/^-+|-+$/g, "");
+      if (inviteCode) {
+        const serverPart = name
+          .toLowerCase()
+          .replace(/[^a-z0-9_-]+/g, "-")
+          .replace(/^-+|-+$/g, "");
 
-      const combined = `${serverPart}-${inviteCode}`
-        .toLowerCase()
-        .replace(/[^a-z0-9_-]/g, "")
-        .substring(0, 32);
+        const combined = `${serverPart}-${inviteCode}`
+          .toLowerCase()
+          .replace(/[^a-z0-9_-]/g, "")
+          .substring(0, 32);
 
-      
-      finalDcsShortCode = combined.length >= 3
-        ? combined
-        : inviteCode;
+        finalDcsShortCode = combined.length >= 3 ? combined : inviteCode;
+      }
     }
-  }
-
- 
-};
-
 
     await createServer.mutateAsync({
       name,

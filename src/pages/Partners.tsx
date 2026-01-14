@@ -2,14 +2,9 @@ import { Header } from "@/components/layout/Header";
 import partners from "@/data/partner.json";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, ShoppingBag } from "lucide-react";
+import { Sparkles, ShoppingBag, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const partnerTypeColors: Record<string, string> = {
-  promotion: "from-warning to-amber-500",
-  theme: "from-purple-500 to-pink-500",
-  bump: "from-primary to-blue-500",
-};
 
 export default function Partners() {
   return (
@@ -47,7 +42,7 @@ export default function Partners() {
                     partnerTypeColors[partner.type] || "from-primary to-primary"
                   )}
                 >
-                  <ShoppingBag className="h-6 w-6" />
+                  <Heart className="h-6 w-6" />
                 </div>
 
                 <h3 className="text-xl font-semibold mb-2">{partner.name}</h3>
@@ -55,9 +50,7 @@ export default function Partners() {
                   {partner.description}
                 </p>
 
-                <Badge variant="outline" className="mb-4 capitalize">
-                  {partner.type}
-                </Badge>
+               
 
                 <Button
                   variant="hero"

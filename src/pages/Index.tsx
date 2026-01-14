@@ -3,12 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Header } from "@/components/layout/Header";
 import { ServerCard } from "@/components/servers/ServerCard";
 import { useServers } from "@/hooks/useServers";
+import { useAuth } from "@/hooks/useAuth";
 import { Users, Shield, Gamepad2, Sparkles, ArrowRight } from "lucide-react";
 
 export default function Index() {
   const { servers, loading } = useServers();
   const featuredServers = servers.slice(0, 6);
-
+  const { user } = useAuth();
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -31,6 +32,9 @@ export default function Index() {
               <span className="text-gradient-primary">Unite</span> Your Gaming Community
             </h1>
             
+             <p className="mx-auto mb-10 max-w-2xl text-sm text-muted-foreground sm:text-xl">
+              Welcomne back, <span className="text-gradient-primary">{user.user_metadata?.username ?? user.email}</span>
+            </p>
             <p className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground sm:text-xl">
               Discover and join amazing Discord servers. Create your own community and connect with gamers worldwide through LGG's trusted network.
             </p>

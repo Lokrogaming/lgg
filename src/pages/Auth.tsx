@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { Eye, EyeOff, Mail, Lock, User, ArrowLeft, Loader2, CalendarDays } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User, ArrowLeft, Loader2 } from "lucide-react";
 import { z } from "zod";
 
 const authSchema = z.object({
@@ -23,7 +23,6 @@ export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
-  const [birthday, setBirthday] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -72,7 +71,6 @@ export default function Auth() {
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          birthday,
           options: {
             emailRedirectTo: `${window.location.origin}/dashboard`,
             data: {
@@ -192,19 +190,7 @@ export default function Auth() {
                   <p className="text-sm text-destructive">{errors.email}</p>
                 )}
               </div>
-              <div className="space-y-2">
-                  <Label htmlFor="birthday">Birthday</Label>
-                  <div className="relative">
-                    <CalendarDays className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="birthday"
-                      type="date"
-                      placeholder="1.1.2026"
-                      value={birthday}
-                      onChange={(e) => setBirthday(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
+
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <div className="relative">

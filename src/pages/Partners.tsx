@@ -5,6 +5,19 @@ import { Badge } from "@/components/ui/badge";
 import { Sparkles, ShoppingBag, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+const partnerTypeColors: Record<string, string> = {
+  discord: "from-indigo-500 to-purple-500",
+  website: "from-emerald-500 to-teal-500",
+};
+
+const partnerTypeLabels: Record<string, string> = {
+  discord: "Discord",
+  website: "Website",
+};
+
+
+
+
 
 export default function Partners() {
   return (
@@ -50,16 +63,49 @@ export default function Partners() {
                   {partner.description}
                 </p>
 
-               
+               <div className="flex flex-wrap gap-2 mb-4">
+  {partner.tags?.map((tag: string) => (
+    <Badge key={tag} variant="secondary" className="text-xs">
+      #{tag}
+    </Badge>
+  ))}
+</div>
 
-                <Button
-                  variant="hero"
-                  className="w-full"
-                  onClick={() => window.open(partner.url, "_blank")}
-                >
-                  Visit Partner
-                </Button>
-              </div>
+
+                <div className="flex flex-col gap-2">
+  {partner.type === "website" && (
+    <Button
+      variant="hero"
+      className="w-full"
+      onClick={() => window.open(partner.url, "_blank")}
+    >
+      Visit Website
+    </Button>
+  )}
+
+  {partner.type === "discord" && (
+    <>
+      <Button
+        variant="hero"
+        className="w-full"
+        onClick={() => window.open(partner.inviteUrl, "_blank")}
+      >
+        Join Discord
+      </Button>
+
+      {partner.landingPageUrl && (
+        <Button
+          variant="outline"
+          className="w-full"
+          onClick={() => window.open(partner.landingPageUrl, "_blank")}
+        >
+          View Landing Page
+        </Button>
+      )}
+    </>
+  )}
+</div>
+
             ))}
           </div>
         </div>

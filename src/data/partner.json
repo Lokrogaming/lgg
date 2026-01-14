@@ -1,16 +1,21 @@
 [
   {
-    "id": "partner-1",
-    "name": "LokroGaming",
-    "description": "Official main partner server of LokroGaming.",
-    "type": "promotion",
-    "url": "https://discord.gg/example"
-  },
+  "id": "lokrogaming",
+  "name": "LokroGaming",
+  "description": "Official main partner server.",
+  "type": "discord",
+  "tags": ["gaming", "community", "official"],
+  "inviteUrl": "https://discord.gg/example",
+  "landingPageUrl": "https://lokrogaming.de"
+}
+,
   {
-    "id": "partner-2",
-    "name": "Example Community",
-    "description": "Friendly gaming community and event host.",
-    "type": "theme",
-    "url": "https://example.com"
-  }
+  "id": "example-site",
+  "name": "Example Website",
+  "description": "Helpful tools and resources.",
+  "type": "website",
+  "tags": ["tools", "web"],
+  "url": "https://example.com"
+}
+
 ]

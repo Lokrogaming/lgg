@@ -44,7 +44,8 @@ import {
   Server as ServerIcon,
   Coins,
   Sparkles,
-  Zap
+  Zap,
+  Pin
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -91,6 +92,14 @@ export default function Admin() {
       is_promoted: !server.is_promoted,
     });
     toast.success(server.is_promoted ? "Promotion removed" : "Server promoted");
+  };
+
+  const handleTogglePin = async (server: Server) => {
+    await updateServer.mutateAsync({
+      id: server.id,
+      is_pinned: !server.is_pinned,
+    });
+    toast.success(server.is_pinned ? "Server unpinned" : "Server pinned to top");
   };
 
   const handleAddCredits = async (server: Server, amount: number) => {
@@ -168,6 +177,17 @@ export default function Admin() {
           </div>
           <div className="gaming-border p-4">
             <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-primary/20">
+                <Pin className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Pinned</p>
+                <p className="text-2xl font-bold">{servers.filter(s => s.is_pinned).length}</p>
+              </div>
+            </div>
+          </div>
+          <div className="gaming-border p-4">
+            <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-amber-500/20">
                 <Coins className="h-5 w-5 text-amber-500" />
               </div>
@@ -229,6 +249,7 @@ export default function Admin() {
                         <div>
                           <div className="flex items-center gap-2">
                             <p className="font-medium">{server.name}</p>
+                            {server.is_pinned && <Pin className="h-3 w-3 text-primary" />}
                             {server.is_promoted && <Sparkles className="h-3 w-3 text-warning" />}
                             {server.is_bumped && <Zap className="h-3 w-3 text-primary" />}
                           </div>
@@ -288,6 +309,10 @@ export default function Admin() {
                           <DropdownMenuItem onClick={() => handleTogglePromotion(server)}>
                             <Sparkles className="mr-2 h-4 w-4" />
                             {server.is_promoted ? "Remove Promotion" : "Promote"}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleTogglePin(server)}>
+                            <Pin className="mr-2 h-4 w-4" />
+                            {server.is_pinned ? "Unpin" : "Pin to Top"}
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem onClick={() => handleAddCredits(server, 100)}>

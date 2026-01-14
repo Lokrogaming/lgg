@@ -4,7 +4,7 @@ import { useDcsServerInfo, extractInviteCode } from "@/hooks/useDcsApi";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Users, ExternalLink, Shield, AlertTriangle, ThumbsUp, Sparkles, Zap, Coins, Wifi, Eye, Palette } from "lucide-react";
+import { Users, ExternalLink, Shield, AlertTriangle, ThumbsUp, Sparkles, Zap, Coins, Wifi, Eye, Palette, Pin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -119,6 +119,12 @@ export function ServerCard({ server, index = 0, showActions, showCredits, onEdit
     >
       {/* Status badges */}
       <div className="absolute top-2 right-2 flex gap-1">
+        {server.is_pinned && (
+          <Badge className="bg-primary text-primary-foreground text-xs">
+            <Pin className="h-3 w-3 mr-1" />
+            Pinned
+          </Badge>
+        )}
         {server.has_custom_card && (
           <Badge variant="outline" className="text-xs bg-background/50">
             <Palette className="h-3 w-3 mr-1" />

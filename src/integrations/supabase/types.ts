@@ -159,6 +159,7 @@ export type Database = {
           id: string
           invite_link: string | null
           is_bumped: boolean | null
+          is_pinned: boolean | null
           is_promoted: boolean | null
           is_verified: boolean | null
           member_count: number | null
@@ -189,6 +190,7 @@ export type Database = {
           id?: string
           invite_link?: string | null
           is_bumped?: boolean | null
+          is_pinned?: boolean | null
           is_promoted?: boolean | null
           is_verified?: boolean | null
           member_count?: number | null
@@ -219,6 +221,7 @@ export type Database = {
           id?: string
           invite_link?: string | null
           is_bumped?: boolean | null
+          is_pinned?: boolean | null
           is_promoted?: boolean | null
           is_verified?: boolean | null
           member_count?: number | null

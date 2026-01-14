@@ -54,6 +54,12 @@ export function Header() {
           >
             Rules
           </Link>
+          <Link 
+            to="/announcements" 
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Announcements
+          </Link>
         </nav>
 
         {/* Desktop Auth */}
@@ -163,8 +169,15 @@ export function Header() {
             >
               Rules
             </Link>
+            <Link 
+              to="/announcements" 
+              className="px-4 py-2 rounded-lg hover:bg-secondary transition-colors"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+             News
+            </Link>
             {user ? (
-              <>
+              
                 <Link 
                   to="/dashboard" 
                   className="px-4 py-2 rounded-lg hover:bg-secondary transition-colors"

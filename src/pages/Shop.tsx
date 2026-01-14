@@ -22,6 +22,7 @@ import {
 import { ShoppingBag, Zap, Sparkles, Palette, Coins, Loader2, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
+import { ThemePreview } from "@/components/shop/ThemePreview";
 
 const itemTypeIcons: Record<string, React.ReactNode> = {
   bump: <Zap className="h-6 w-6" />,
@@ -151,6 +152,11 @@ export default function Shop() {
                       </Badge>
                     )}
                   </div>
+
+                  {/* Theme Preview */}
+                  {item.type === "theme" && (
+                    <ThemePreview themeName={item.name} />
+                  )}
 
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1 text-xl font-bold text-warning">

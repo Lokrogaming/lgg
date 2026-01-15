@@ -44,22 +44,42 @@ export function Countdown({ targetDate }: CountdownProps) {
     return () => clearInterval(interval);
   }, [target]);
 
-  return (
-    <div id="timer" style={{ display: "flex", gap: "12px", fontSize: "1.25rem" }}>
-      <TimeBox label="days" value={timeLeft.days} />
-      <TimeBox label="hours" value={timeLeft.hours} />
-      <TimeBox label="min" value={timeLeft.minutes} />
-      <TimeBox label="sec" value={timeLeft.seconds} />
-    </div>
-    
-  );
+  useEffect(() => {
+  const interval = setInterval(() => {
+    setTimeLeft((prev) => {
+      if (
+        prev.days === 0 &&
+        prev.hours === 0 &&
+        prev.minutes === 0 &&
+        prev.seconds === 0
+      ) {
+        clearInterval(interval);
+        return prev;
+      }
+      return calculateTimeLeft(target);
+    });
+  }, 1000);
+
+  return () => clearInterval(interval);
+}, [target]);
+
+  rreturn (
+  <div className="flex gap-4 text-xl text-muted-foreground">
+    <TimeBox label="days" value={timeLeft.days} />
+    <TimeBox label="hours" value={timeLeft.hours} />
+    <TimeBox label="min" value={timeLeft.minutes} />
+    <TimeBox label="sec" value={timeLeft.seconds} />
+  </div>
+);
+
 }
 
 function TimeBox({ label, value }: { label: string; value: number }) {
   return (
-    <div style={{ textAlign: "center" }}>
-      <div style={{ fontWeight: "bold", fontSize: "1.5rem" }}>{value}</div>
-      <div style={{ fontSize: "0.75rem", opacity: 0.7 }}>{label}</div>
+    <div className="text-center">
+      <div className="text-2xl font-bold">{value}</div>
+      <div className="text-xs opacity-70">{label}</div>
     </div>
   );
 }
+

@@ -22,8 +22,8 @@ const ReleasingSoon = () => {
         <div className="text-muted-foreground">
           <Countdown targetDate={new Date("2026-01-02")} />
         </div>
+        <p className="text-sm text-muted-foreground">/\</p>
 <p className="text-sm text-muted-foreground">
-          /\
           Does not Work... I don't know why, but it doesn't work...
         </p>
         <p className="text-sm text-muted-foreground">

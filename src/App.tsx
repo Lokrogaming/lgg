@@ -16,6 +16,7 @@ import ServerLanding from "./pages/ServerLanding";
 import Announcements from "./pages/Announcements"
 import Partners from "./pages/Partners"
 import NotFound from "./pages/NotFound";
+import ReleasingSoon from "./pages/ReleasingSoon";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/announcements" element={<Announcements />} />
             <Route path="/partners" element={<Partners />} />
             <Route path="/server/:serverId" element={<ServerLanding />} />
+            <Route path="/soon" element={<ReleasingSoon />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

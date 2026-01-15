@@ -15,7 +15,7 @@ const ReleasingSoon = () => {
         </h1>
 
         <p className="text-xl text-muted-foreground max-w-md">
-          Releasing soon! Further information and releasedate on our discordserver
+          Releasing soon! Further information and releasedate on our discord-server
         </p>
 
         {/* Countdown */}
@@ -23,7 +23,7 @@ const ReleasingSoon = () => {
           <Countdown targetDate={new Date("2026-01-02")} />
         </div>
 <p className="text-sm text-muted-foreground">
-          /\</br>
+          /\
           Does not Work... I don't know why, but it doesn't work...
         </p>
         <p className="text-sm text-muted-foreground">

@@ -1,5 +1,5 @@
 import { Header } from "@/components/layout/Header";
-import announcementsData from "@/data/announcements.json";
+import announcementsData from "https://github.com/Lokrogaming/lgg/blob/main/src/data/announcements.json";
 import { Shield, ScrollText } from "lucide-react";
 
 export default function Announcements() {

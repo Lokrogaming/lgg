@@ -8,7 +8,7 @@ const ReleasingSoon = () => {
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted">
       <div className="text-center flex flex-col items-center gap-4">
-        <SearchX className="h-6 w-6 text-warning" />
+        <SearchX className="h-6 w-6 text-gold" />
 
         <h1 className="text-4xl font-bold">
           Not finished yet!

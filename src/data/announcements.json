@@ -2,8 +2,8 @@
   "announcements": [
     {
       "paragraph": {
-        "header": "Added announcements!",
-        "text": "We've added announcements, but at the moment they're mainly available in German"
+        "header": "Added partners!",
+        "text": "Wir haben Partnerseiten geaddet. Aktuell werden aber noch keine Pertneranfragen bearbeitet, können aber in unserem Discord erstellt werden"
       }
     },
     {
@@ -15,3 +15,4 @@
     
   ]
 }
+

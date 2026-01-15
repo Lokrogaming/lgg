@@ -4,6 +4,7 @@ import { useMyServers, Server } from "@/hooks/useServers";
 import { ThemePreview } from "@/components/shop/ThemePreview";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -74,14 +75,46 @@ export function ThemeInventory({ userId }: ThemeInventoryProps) {
           const selectedServerId = selectedServers[purchase.id];
           const selectedServer = servers.find((s: Server) => s.id === selectedServerId);
           const isApplied = selectedServer?.theme === themeKey;
+          
+          // Find servers currently using this theme
+          const serversUsingTheme = servers.filter((s: Server) => s.theme === themeKey);
 
           return (
             <Card key={purchase.id} className="gaming-border overflow-hidden">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Palette className="h-4 w-4 text-primary" />
-                  {purchase.shop_items.name}
-                </CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Palette className="h-4 w-4 text-primary" />
+                    {purchase.shop_items.name}
+                  </CardTitle>
+                  {serversUsingTheme.length > 0 && (
+                    <Badge variant="default" className="bg-success/20 text-success border-success/30">
+                      <Check className="h-3 w-3 mr-1" />
+                      Active
+                    </Badge>
+                  )}
+                </div>
+                
+                {/* Show which servers are using this theme */}
+                {serversUsingTheme.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {serversUsingTheme.map((server: Server) => (
+                      <Badge 
+                        key={server.id} 
+                        variant="secondary" 
+                        className="text-xs flex items-center gap-1"
+                      >
+                        <Avatar className="h-3 w-3">
+                          <AvatarImage src={server.avatar_url || undefined} />
+                          <AvatarFallback className="text-[8px]">
+                            {server.name.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                        {server.name}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
               </CardHeader>
               <CardContent className="space-y-3">
                 <ThemePreview themeName={themeKey} />

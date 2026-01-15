@@ -6,11 +6,13 @@ import { useMyServers } from "@/hooks/useServers";
 import { ServerCard } from "@/components/servers/ServerCard";
 import { CreateServerDialog } from "@/components/servers/CreateServerDialog";
 import { EditServerDialog } from "@/components/servers/EditServerDialog";
+import { ThemeInventory } from "@/components/dashboard/ThemeInventory";
 import { Button } from "@/components/ui/button";
-import { Plus, Loader2, Server as ServerIcon, Coins, ShoppingBag } from "lucide-react";
+import { Plus, Loader2, Server as ServerIcon, Coins, ShoppingBag, Palette } from "lucide-react";
 import { Server } from "@/hooks/useServers";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function Dashboard() {
   const { user, loading: authLoading } = useAuth();
@@ -96,39 +98,59 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Server Grid */}
-        {serversLoading ? (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="gaming-border h-64 animate-pulse bg-muted/50" />
-            ))}
-          </div>
-        ) : servers.length > 0 ? (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {servers.map((server, index) => (
-              <ServerCard 
-                key={server.id} 
-                server={server} 
-                index={index}
-                showActions
-                showCredits
-                onEdit={() => setEditingServer(server)}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-20 gaming-border">
-            <ServerIcon className="mx-auto h-16 w-16 text-muted-foreground mb-4" />
-            <h3 className="text-xl font-semibold mb-2">No servers yet</h3>
-            <p className="text-muted-foreground mb-6">
-              Register your first Discord server to get started
-            </p>
-            <Button variant="hero" onClick={() => setCreateDialogOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Your First Server
-            </Button>
-          </div>
-        )}
+        {/* Tabs for Servers and Inventory */}
+        <Tabs defaultValue="servers" className="w-full">
+          <TabsList className="mb-6">
+            <TabsTrigger value="servers" className="flex items-center gap-2">
+              <ServerIcon className="h-4 w-4" />
+              Servers
+            </TabsTrigger>
+            <TabsTrigger value="themes" className="flex items-center gap-2">
+              <Palette className="h-4 w-4" />
+              My Themes
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="servers">
+            {/* Server Grid */}
+            {serversLoading ? (
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="gaming-border h-64 animate-pulse bg-muted/50" />
+                ))}
+              </div>
+            ) : servers.length > 0 ? (
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {servers.map((server, index) => (
+                  <ServerCard 
+                    key={server.id} 
+                    server={server} 
+                    index={index}
+                    showActions
+                    showCredits
+                    onEdit={() => setEditingServer(server)}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-20 gaming-border">
+                <ServerIcon className="mx-auto h-16 w-16 text-muted-foreground mb-4" />
+                <h3 className="text-xl font-semibold mb-2">No servers yet</h3>
+                <p className="text-muted-foreground mb-6">
+                  Register your first Discord server to get started
+                </p>
+                <Button variant="hero" onClick={() => setCreateDialogOpen(true)}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Your First Server
+                </Button>
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="themes">
+            <ThemeInventory userId={user.id} />
+          </TabsContent>
+        </Tabs>
       </main>
 
       <CreateServerDialog 

@@ -51,37 +51,24 @@ export default function Partners() {
 
                 {/* BUTTONS */}
                 <div className="flex flex-col gap-2">
-                  {partner.type === "website" && (
+                  <Button
+                    variant="hero"
+                    onClick={() =>
+                      window.open(partner.inviteUrl, "_blank")
+                    }
+                  >
+                    {partner.type === "website" ? "Visit Website" : "Join Discord"}
+                  </Button>
+
+                  {partner.landingPageUrl && partner.type === "discord" && (
                     <Button
-                      variant="hero"
-                      onClick={() => window.open(partner.url, "_blank")}
+                      variant="outline"
+                      onClick={() =>
+                        window.open(partner.landingPageUrl, "_blank")
+                      }
                     >
-                      Visit Website
+                      View Landing Page
                     </Button>
-                  )}
-
-                  {partner.type === "discord" && (
-                    <>
-                      <Button
-                        variant="hero"
-                        onClick={() =>
-                          window.open(partner.inviteUrl, "_blank")
-                        }
-                      >
-                        Join Discord
-                      </Button>
-
-                      {partner.landingPageUrl && (
-                        <Button
-                          variant="outline"
-                          onClick={() =>
-                            window.open(partner.landingPageUrl, "_blank")
-                          }
-                        >
-                          View Landing Page
-                        </Button>
-                      )}
-                    </>
                   )}
                 </div>
               </div>

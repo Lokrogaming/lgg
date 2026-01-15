@@ -38,14 +38,14 @@ export default function Index() {
             </p>
 
             {user && (
-  <p className="mx-auto mb-10 max-w-2xl text-sm text-muted-foreground">
-    Welcome back,{" "}
-    <span className="text-gradient-primary">
-      {user.user_metadata?.username.replace(user.username.charAt(0), user.username.charAt(0).toUpperCase()) ?? user.email}
-    </span>
-    !
-  </p>
-)}
+              <p className="mx-auto mb-10 max-w-2xl text-sm text-muted-foreground">
+                Welcome back,{" "}
+                <span className="text-gradient-primary">
+                  {user.user_metadata?.username ?? user.email}
+                </span>
+                !
+              </p>
+            )}
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button variant="hero" size="xl" asChild>

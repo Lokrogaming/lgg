@@ -16,40 +16,53 @@ interface ThemeData {
 }
 
 const themeStyles: Record<string, ThemeData> = {
-  default: {},
+  default: {
+    background: "linear-gradient(135deg, rgba(100, 100, 100, 0.15), rgba(50, 50, 50, 0.15))",
+    borderColor: "rgba(100, 100, 100, 0.5)",
+    fontFamily: "inherit",
+    accentColor: "#6b7280",
+    textColor: "#ffffff",
+    mutedColor: "#9ca3af",
+  },
   neon: {
     background: "linear-gradient(135deg, rgba(236, 72, 153, 0.15), rgba(6, 182, 212, 0.15))",
     borderColor: "rgba(236, 72, 153, 0.5)",
     fontFamily: "Orbitron, sans-serif",
     accentColor: "#ec4899",
+    textColor: "#ffffff",
+    mutedColor: "#9ca3af",
   },
   gold: {
     background: "linear-gradient(135deg, rgba(234, 179, 8, 0.15), rgba(217, 119, 6, 0.15))",
     borderColor: "rgba(234, 179, 8, 0.5)",
     fontFamily: "Cinzel, serif",
     accentColor: "#eab308",
+    textColor: "#ffffff",
+    mutedColor: "#9ca3af",
   },
   galaxy: {
     background: "linear-gradient(135deg, rgba(147, 51, 234, 0.15), rgba(79, 70, 229, 0.15))",
     borderColor: "rgba(147, 51, 234, 0.5)",
     fontFamily: "Space Grotesk, sans-serif",
     accentColor: "#9333ea",
+    textColor: "#ffffff",
+    mutedColor: "#9ca3af",
   },
-
-  // Neues Theme: Blood Moon
   bloodMoon: {
     background: "linear-gradient(135deg, rgba(139, 0, 0, 0.15), rgba(220, 20, 60, 0.15))",
     borderColor: "rgba(220, 20, 60, 0.5)",
     fontFamily: "Creepster, cursive",
     accentColor: "#dc143c",
+    textColor: "#ffffff",
+    mutedColor: "#9ca3af",
   },
-
-  // Neues Theme: Dark Cosmic
   darkCosmic: {
     background: "linear-gradient(135deg, rgba(25, 25, 112, 0.15), rgba(0, 0, 0, 0.15))",
     borderColor: "rgba(72, 61, 139, 0.5)",
     fontFamily: "Orbitron, sans-serif",
     accentColor: "#483d8b",
+    textColor: "#ffffff",
+    mutedColor: "#9ca3af",
   },
 };
 

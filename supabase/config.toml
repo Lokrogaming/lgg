@@ -2,3 +2,6 @@ project_id = "seygjhdywxmdopkwlrfu"
 
 [functions.expire-bumps]
 verify_jwt = false
+
+[functions.generate-description]
+verify_jwt = false

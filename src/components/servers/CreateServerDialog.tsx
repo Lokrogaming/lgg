@@ -21,6 +21,7 @@ import { Switch } from "@/components/ui/switch";
 import { useCreateServer, AgeRating } from "@/hooks/useServers";
 import { extractInviteCode, fetchDcsServerInfo, createDcsLink } from "@/hooks/useDcsApi";
 import { AvatarUpload } from "@/components/ui/avatar-upload";
+import { DescriptionGenerator } from "@/components/servers/DescriptionGenerator";
 import { Loader2, Link as LinkIcon, Bell, RefreshCw, Check, X } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
@@ -244,6 +245,10 @@ export function CreateServerDialog({ open, onOpenChange, onSuccess }: CreateServ
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Tell us about your server..."
                   rows={3}
+                />
+                <DescriptionGenerator
+                  serverName={name}
+                  onDescriptionGenerated={setDescription}
                 />
               </div>
 

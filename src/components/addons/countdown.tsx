@@ -46,10 +46,10 @@ export function Countdown({ targetDate }: CountdownProps) {
 
   return (
     <div style={{ display: "flex", gap: "12px", fontSize: "1.25rem" }}>
-      <TimeBox label="Tage" value={timeLeft.days} />
-      <TimeBox label="Std" value={timeLeft.hours} />
-      <TimeBox label="Min" value={timeLeft.minutes} />
-      <TimeBox label="Sek" value={timeLeft.seconds} />
+      <TimeBox label="days" value={timeLeft.days} />
+      <TimeBox label="hours" value={timeLeft.hours} />
+      <TimeBox label="min" value={timeLeft.minutes} />
+      <TimeBox label="sec" value={timeLeft.seconds} />
     </div>
   );
 }

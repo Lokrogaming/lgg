@@ -14,7 +14,7 @@ const NotFound = () => {
         
         <Countdown targetDate={new Date("2026-01-01")} />
 
-        till release
+        <p className="mb-4 text-xl text-muted-foreground"> left till release</p>
 
         <Button variant="hero" size="xl" asChild>
                 <a

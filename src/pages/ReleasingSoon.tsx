@@ -1,7 +1,7 @@
 import { SearchX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Countdown } from "@/components/addons/countdown";
-import { Link } from "react-router-dom";
+
 
 const NotFound = () => {
             
@@ -17,10 +17,13 @@ const NotFound = () => {
         till release
 
         <Button variant="hero" size="xl" asChild>
-                <Link to="https://dcs.lol/lokrogaming">
-                  Join Discord
-                  
-                </Link>
+                <a
+    href="https://dcs.lol/lokrogaming"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    Join Discord
+  </a>
               </Button>
       </div>
     </div>

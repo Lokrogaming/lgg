@@ -32,6 +32,7 @@ import { Switch } from "@/components/ui/switch";
 import { useUpdateServer, useDeleteServer, Server, AgeRating } from "@/hooks/useServers";
 import { extractInviteCode, fetchDcsServerInfo } from "@/hooks/useDcsApi";
 import { AvatarUpload } from "@/components/ui/avatar-upload";
+import { DescriptionGenerator } from "@/components/servers/DescriptionGenerator";
 import { Loader2, Link, Bell, Trash2, RefreshCw } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
@@ -162,6 +163,10 @@ export function EditServerDialog({ server, open, onOpenChange, onSuccess }: Edit
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Tell us about your server..."
                   rows={3}
+                />
+                <DescriptionGenerator
+                  serverName={name}
+                  onDescriptionGenerated={setDescription}
                 />
               </div>
 

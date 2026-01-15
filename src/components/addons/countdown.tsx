@@ -51,18 +51,10 @@ export function Countdown({ targetDate }: CountdownProps) {
       <TimeBox label="min" value={timeLeft.minutes} />
       <TimeBox label="sec" value={timeLeft.seconds} />
     </div>
-    <div id="releaseText" style={{ display: "flex", gap: "12px", fontSize: "1.25rem" }}>
-      <TimeBox label="days" value={timeLeft.days} />
-      <TimeBox label="hours" value={timeLeft.hours} />
-      <TimeBox label="min" value={timeLeft.minutes} />
-      <TimeBox label="sec" value={timeLeft.seconds} />
-    </div>
+    
   );
 }
-if (timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0) {
-    Timer.style.display = "block";
-    releaseText.style.display = "none";
-};
+
 function TimeBox({ label, value }: { label: string; value: number }) {
   return (
     <div style={{ textAlign: "center" }}>

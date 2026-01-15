@@ -20,7 +20,7 @@ const ReleasingSoon = () => {
 
         {/* Countdown */}
         <div className="text-muted-foreground">
-          <Countdown targetDate={new Date("2026-02-01")} />
+          <Countdown targetDate={new Date("2026-01-02")} />
         </div>
 
         <p className="text-sm text-muted-foreground">

@@ -41,7 +41,7 @@ export default function Index() {
   <p className="mx-auto mb-10 max-w-2xl text-sm text-muted-foreground">
     Welcome back,{" "}
     <span className="text-gradient-primary">
-      {user.user_metadata?.username ?? user.email}
+      {user.user_metadata?.username.replace(username.charAt(0), username.charAt(0).toUpperCase()) ?? user.email}
     </span>
     !
   </p>

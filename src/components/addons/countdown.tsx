@@ -63,7 +63,7 @@ export function Countdown({ targetDate }: CountdownProps) {
   return () => clearInterval(interval);
 }, [target]);
 
-  rreturn (
+  return (
   <div className="flex gap-4 text-xl text-muted-foreground">
     <TimeBox label="days" value={timeLeft.days} />
     <TimeBox label="hours" value={timeLeft.hours} />

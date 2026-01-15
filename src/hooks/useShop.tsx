@@ -147,3 +147,65 @@ export function useServerPurchases(serverId: string | undefined) {
     enabled: !!serverId,
   });
 }
+
+export interface PurchaseWithItem extends Purchase {
+  shop_items: ShopItem;
+  servers?: { id: string; name: string; avatar_url: string | null };
+}
+
+export function useMyThemePurchases(userId: string | undefined) {
+  return useQuery({
+    queryKey: ["my-theme-purchases", userId],
+    queryFn: async () => {
+      if (!userId) return [];
+      
+      // First get user's servers
+      const { data: servers, error: serversError } = await supabase
+        .from("servers")
+        .select("id")
+        .eq("owner_id", userId);
+
+      if (serversError) throw serversError;
+      if (!servers || servers.length === 0) return [];
+
+      const serverIds = servers.map(s => s.id);
+
+      // Get theme purchases for these servers
+      const { data, error } = await supabase
+        .from("purchases")
+        .select("*, shop_items(*), servers(id, name, avatar_url)")
+        .in("server_id", serverIds)
+        .eq("is_active", true);
+
+      if (error) throw error;
+      
+      // Filter to only theme items
+      return (data as PurchaseWithItem[]).filter(p => p.shop_items?.type === "theme");
+    },
+    enabled: !!userId,
+  });
+}
+
+export function useApplyTheme() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ serverId, themeName }: { serverId: string; themeName: string }) => {
+      const { error } = await supabase
+        .from("servers")
+        .update({ theme: themeName })
+        .eq("id", serverId);
+
+      if (error) throw error;
+      return { themeName };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["servers"] });
+      queryClient.invalidateQueries({ queryKey: ["my-servers"] });
+      toast.success("Theme applied successfully!");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+}

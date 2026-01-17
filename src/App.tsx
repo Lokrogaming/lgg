@@ -29,8 +29,13 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<ReleasingSoon />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE 
+<<<<<<< HEAD
+            
+=======
+          {/* ADD ALL CUSTOM ROUTES ABOVE
+>>>>>>> 63792f49b34beda2231539bab5c713714490dcc0
             <Route path="/auth" element={<Auth />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE 
             <Route path="/rules" element={<Rules />} />
             <Route path="/servers" element={<Servers />} />
             <Route path="/dashboard" element={<Dashboard />} />
@@ -41,7 +46,7 @@ const App = () => (
             <Route path="/partners" element={<Partners />} />
             <Route path="/server/:serverId" element={<ServerLanding />} />
             
-            THE CATCH-ALL "*" ROUTE */}
+             THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

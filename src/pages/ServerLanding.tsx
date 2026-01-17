@@ -1,7 +1,8 @@
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Server, AgeRating, useVoteForServer, useUserVotes } from "@/hooks/useServers";
+import { Server, AgeRating, useVoteForServer, useUserVotes, useReportServer, useUserReports } from "@/hooks/useServers";
 import { useDcsServerInfo, extractInviteCode } from "@/hooks/useDcsApi";
 import { useAuth } from "@/hooks/useAuth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -17,9 +18,13 @@ import {
   Zap, 
   Wifi,
   ArrowLeft,
-  Loader2
+  Loader2,
+  Flag,
+  Ban
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import { ReportDialog } from "@/components/servers/ReportDialog";
 
 const ageRatingConfig: Record<AgeRating, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; className?: string }> = {
   all_ages: { label: "All Ages", variant: "secondary" },
@@ -86,10 +91,13 @@ const themeStyles: Record<string, ThemeData> = {
 
 
 export default function ServerLanding() {
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const { serverId } = useParams<{ serverId: string }>();
   const { user } = useAuth();
   const { data: userVotes = [] } = useUserVotes(user?.id);
+  const { data: userReports = [] } = useUserReports(user?.id);
   const voteForServer = useVoteForServer();
+  const reportServer = useReportServer();
 
   const { data: server, isLoading } = useQuery({
     queryKey: ["server", serverId],
@@ -120,6 +128,8 @@ export default function ServerLanding() {
   const { data: dcsInfo } = useDcsServerInfo(server?.invite_link ? extractInviteCode(server.invite_link) : null);
 
   const hasVoted = userVotes.includes(server?.id || "");
+  const hasReported = userReports.includes(server?.id || "");
+  const isBlocked = server?.is_blocked;
   const customData = (server?.custom_landing_data || {}) as CustomLandingData;
   const hasCustomLanding = server?.has_custom_landing && customData;
   
@@ -130,6 +140,28 @@ export default function ServerLanding() {
   const handleVote = () => {
     if (!user || !server) return;
     voteForServer.mutate(server.id);
+  };
+
+  const handleReportClick = () => {
+    if (!user) {
+      toast.error("Please log in to report servers");
+      return;
+    }
+    if (hasReported) {
+      toast.info("You have already reported this server");
+      return;
+    }
+    setReportDialogOpen(true);
+  };
+
+  const handleReportSubmit = (reason: string) => {
+    if (!server) return;
+    reportServer.mutate(
+      { serverId: server.id, reason },
+      {
+        onSuccess: () => setReportDialogOpen(false),
+      }
+    );
   };
 
   if (isLoading) {
@@ -207,13 +239,19 @@ export default function ServerLanding() {
           >
             {/* Status badges */}
             <div className="flex justify-center gap-2 mb-6">
-              {server.is_promoted && (
+              {isBlocked && (
+                <Badge variant="destructive">
+                  <Ban className="h-3 w-3 mr-1" />
+                  Blocked
+                </Badge>
+              )}
+              {server.is_promoted && !isBlocked && (
                 <Badge className="bg-warning text-warning-foreground">
                   <Sparkles className="h-3 w-3 mr-1" />
                   Promoted
                 </Badge>
               )}
-              {server.is_bumped && (
+              {server.is_bumped && !isBlocked && (
                 <Badge className="bg-primary text-primary-foreground">
                   <Zap className="h-3 w-3 mr-1" />
                   Bumped
@@ -292,14 +330,30 @@ export default function ServerLanding() {
                 variant={hasVoted ? "default" : "outline"}
                 size="lg"
                 onClick={handleVote}
-                disabled={!user || voteForServer.isPending}
+                disabled={!user || voteForServer.isPending || isBlocked}
                 className={cn(hasVoted && "bg-success hover:bg-success/90")}
               >
                 <ThumbsUp className={cn("h-5 w-5 mr-2", hasVoted && "fill-current")} />
                 {hasVoted ? "Voted" : "Vote"}
               </Button>
 
-              {dcsLink && (
+              <Button
+                variant={hasReported ? "destructive" : "outline"}
+                size="lg"
+                onClick={handleReportClick}
+                disabled={!user || reportServer.isPending || hasReported}
+                title={hasReported ? "Already reported" : "Report server"}
+              >
+                <Flag className={cn("h-5 w-5 mr-2", hasReported && "fill-current")} />
+                {hasReported ? "Reported" : "Report"}
+              </Button>
+
+              {isBlocked ? (
+                <Button variant="secondary" size="lg" disabled>
+                  <Ban className="h-5 w-5 mr-2" />
+                  Server Blocked
+                </Button>
+              ) : dcsLink ? (
                 <Button 
                   variant={server.age_rating === "nsfw" ? "nsfw" : "hero"} 
                   size="lg"
@@ -310,7 +364,7 @@ export default function ServerLanding() {
                     <ExternalLink className="ml-2 h-5 w-5" />
                   </a>
                 </Button>
-              )}
+              ) : null}
             </div>
           </div>
            
@@ -382,7 +436,14 @@ export default function ServerLanding() {
           </div>
         </div>
       </section>
+
+      <ReportDialog
+        open={reportDialogOpen}
+        onOpenChange={setReportDialogOpen}
+        serverName={server.name}
+        onSubmit={handleReportSubmit}
+        isLoading={reportServer.isPending}
+      />
     </div>
   );
 }
-

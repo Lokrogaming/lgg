@@ -1,12 +1,15 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Server, AgeRating, useVoteForServer, useUserVotes } from "@/hooks/useServers";
+import { Server, AgeRating, useVoteForServer, useUserVotes, useReportServer, useUserReports } from "@/hooks/useServers";
 import { useDcsServerInfo, extractInviteCode } from "@/hooks/useDcsApi";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Users, ExternalLink, Shield, AlertTriangle, ThumbsUp, Sparkles, Zap, Coins, Wifi, Eye, Palette, Pin } from "lucide-react";
+import { Users, ExternalLink, Shield, AlertTriangle, ThumbsUp, Sparkles, Zap, Coins, Wifi, Eye, Palette, Pin, Flag, Ban } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
+import { ReportDialog } from "./ReportDialog";
 
 interface ServerCardProps {
   server: Server;
@@ -80,16 +83,21 @@ const themeStyles: Record<string, ThemeData> = {
 
 
 export function ServerCard({ server, index = 0, showActions, showCredits, onEdit, onCustomize }: ServerCardProps) {
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const ratingConfig = ageRatingConfig[server.age_rating];
   const { user } = useAuth();
   const { data: userVotes = [] } = useUserVotes(user?.id);
+  const { data: userReports = [] } = useUserReports(user?.id);
   const voteForServer = useVoteForServer();
+  const reportServer = useReportServer();
   
   // Fetch live data from dcs.lol
   const discordInviteCode = server.invite_link ? extractInviteCode(server.invite_link) : null;
   const { data: dcsInfo } = useDcsServerInfo(discordInviteCode);
   
   const hasVoted = userVotes.includes(server.id);
+  const hasReported = userReports.includes(server.id);
+  const isBlocked = server.is_blocked;
   const themeData = themeStyles[server.theme] || themeStyles.default;
   const customCardData = server.has_custom_card ? (server.custom_card_data as CustomCardData) : null;
   
@@ -109,6 +117,29 @@ export function ServerCard({ server, index = 0, showActions, showCredits, onEdit
       return;
     }
     voteForServer.mutate(server.id);
+  };
+
+  const handleReportClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user) {
+      toast.error("Please log in to report servers");
+      return;
+    }
+    if (hasReported) {
+      toast.info("You have already reported this server");
+      return;
+    }
+    setReportDialogOpen(true);
+  };
+
+  const handleReportSubmit = (reason: string) => {
+    reportServer.mutate(
+      { serverId: server.id, reason },
+      {
+        onSuccess: () => setReportDialogOpen(false),
+      }
+    );
   };
 
   // Custom styles for fully customized cards
@@ -131,30 +162,37 @@ export function ServerCard({ server, index = 0, showActions, showCredits, onEdit
         server.age_rating === "nsfw" && "hover:glow-nsfw",
         server.is_promoted && "ring-2 ring-warning/50",
         server.is_bumped && "ring-2 ring-primary/50",
+        isBlocked && "opacity-60",
       )}
       style={{ animationDelay: `${index * 100}ms`, ...customStyles }}
     >
       {/* Status badges */}
       <div className="absolute top-2 right-2 flex gap-1">
-        {server.is_pinned && (
+        {isBlocked && (
+          <Badge variant="destructive" className="text-xs">
+            <Ban className="h-3 w-3 mr-1" />
+            Blocked
+          </Badge>
+        )}
+        {server.is_pinned && !isBlocked && (
           <Badge className="bg-primary text-primary-foreground text-xs">
             <Pin className="h-3 w-3 mr-1" />
             Pinned
           </Badge>
         )}
-        {server.has_custom_card && (
+        {server.has_custom_card && !isBlocked && (
           <Badge variant="outline" className="text-xs bg-background/50">
             <Palette className="h-3 w-3 mr-1" />
             Custom
           </Badge>
         )}
-        {server.is_promoted && (
+        {server.is_promoted && !isBlocked && (
           <Badge className="bg-warning text-warning-foreground text-xs">
             <Sparkles className="h-3 w-3 mr-1" />
             Promoted
           </Badge>
         )}
-        {server.is_bumped && !server.is_promoted && (
+        {server.is_bumped && !server.is_promoted && !isBlocked && (
           <Badge className="bg-primary text-primary-foreground text-xs">
             <Zap className="h-3 w-3 mr-1" />
             Bumped
@@ -223,10 +261,20 @@ export function ServerCard({ server, index = 0, showActions, showCredits, onEdit
           variant={hasVoted ? "default" : "outline"}
           size="sm"
           onClick={handleVote}
-          disabled={!user || voteForServer.isPending}
+          disabled={!user || voteForServer.isPending || isBlocked}
           className={cn(hasVoted && "bg-success hover:bg-success/90")}
         >
           <ThumbsUp className={cn("h-4 w-4", hasVoted && "fill-current")} />
+        </Button>
+
+        <Button
+          variant={hasReported ? "destructive" : "outline"}
+          size="sm"
+          onClick={handleReportClick}
+          disabled={!user || reportServer.isPending || hasReported}
+          title={hasReported ? "Already reported" : "Report server"}
+        >
+          <Flag className={cn("h-4 w-4", hasReported && "fill-current")} />
         </Button>
 
         <Button
@@ -240,7 +288,12 @@ export function ServerCard({ server, index = 0, showActions, showCredits, onEdit
           </Link>
         </Button>
 
-        {dcsLink ? (
+        {isBlocked ? (
+          <Button variant="secondary" className="flex-1" disabled>
+            <Ban className="h-4 w-4 mr-2" />
+            Server Blocked
+          </Button>
+        ) : dcsLink ? (
           <Button 
             variant={server.age_rating === "nsfw" ? "nsfw" : "default"} 
             className="flex-1"
@@ -269,6 +322,14 @@ export function ServerCard({ server, index = 0, showActions, showCredits, onEdit
           </Button>
         )}
       </div>
+
+      <ReportDialog
+        open={reportDialogOpen}
+        onOpenChange={setReportDialogOpen}
+        serverName={server.name}
+        onSubmit={handleReportSubmit}
+        isLoading={reportServer.isPending}
+      />
     </div>
   );
 }

@@ -24,11 +24,13 @@ export interface Server {
   is_promoted: boolean;
   is_pinned: boolean;
   is_bumped: boolean;
+  is_blocked: boolean;
   bump_expires_at: string | null;
   theme: string;
   created_at: string;
   updated_at: string;
   vote_count?: number;
+  report_count?: number;
   // Customization fields
   custom_card_data: unknown | null;
   custom_landing_data: unknown | null;
@@ -304,5 +306,165 @@ export function useUserVotes(userId: string | undefined) {
       return data.map(v => v.server_id);
     },
     enabled: !!userId,
+  });
+}
+
+export function useReportServer() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ serverId, reason }: { serverId: string; reason?: string }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Please log in to report");
+
+      const { error } = await supabase
+        .from("server_reports")
+        .insert({ server_id: serverId, user_id: user.id, reason });
+
+      if (error) {
+        if (error.code === "23505") {
+          throw new Error("You have already reported this server");
+        }
+        throw error;
+      }
+      return { success: true };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["servers"] });
+      toast.success("Server reported. Thank you for helping keep our community safe.");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+}
+
+export function useUserReports(userId: string | undefined) {
+  return useQuery({
+    queryKey: ["user-reports", userId],
+    queryFn: async () => {
+      if (!userId) return [];
+      const { data, error } = await supabase
+        .from("server_reports")
+        .select("server_id")
+        .eq("user_id", userId);
+      if (error) throw error;
+      return data.map(r => r.server_id);
+    },
+    enabled: !!userId,
+  });
+}
+
+export interface ServerReport {
+  id: string;
+  server_id: string;
+  user_id: string;
+  reason: string | null;
+  created_at: string;
+  server?: Server;
+}
+
+export function useAllReports() {
+  return useQuery({
+    queryKey: ["all-reports"],
+    queryFn: async () => {
+      // Fetch all reports
+      const { data: reports, error: reportsError } = await supabase
+        .from("server_reports")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (reportsError) throw reportsError;
+
+      // Fetch server details for each report
+      const serverIds = [...new Set(reports.map(r => r.server_id))];
+      const { data: servers } = await supabase
+        .from("servers")
+        .select("*")
+        .in("id", serverIds);
+
+      // Map servers to reports
+      const serversMap = new Map(servers?.map(s => [s.id, s]) || []);
+      
+      return reports.map(report => ({
+        ...report,
+        server: serversMap.get(report.server_id) as Server | undefined,
+      })) as ServerReport[];
+    },
+  });
+}
+
+export function useDeleteReport() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (reportId: string) => {
+      const { error } = await supabase
+        .from("server_reports")
+        .delete()
+        .eq("id", reportId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["all-reports"] });
+      queryClient.invalidateQueries({ queryKey: ["servers"] });
+      toast.success("Report deleted");
+    },
+    onError: (error) => {
+      toast.error("Failed to delete report: " + error.message);
+    },
+  });
+}
+
+export function useUnblockServer() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (serverId: string) => {
+      const { error } = await supabase
+        .from("servers")
+        .update({ is_blocked: false })
+        .eq("id", serverId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["servers"] });
+      queryClient.invalidateQueries({ queryKey: ["all-reports"] });
+      toast.success("Server unblocked");
+    },
+    onError: (error) => {
+      toast.error("Failed to unblock server: " + error.message);
+    },
+  });
+}
+
+export function useClearServerReports() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (serverId: string) => {
+      const { error } = await supabase
+        .from("server_reports")
+        .delete()
+        .eq("server_id", serverId);
+
+      if (error) throw error;
+
+      // Also unblock the server
+      await supabase
+        .from("servers")
+        .update({ is_blocked: false })
+        .eq("id", serverId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["all-reports"] });
+      queryClient.invalidateQueries({ queryKey: ["servers"] });
+      toast.success("All reports cleared and server unblocked");
+    },
+    onError: (error) => {
+      toast.error("Failed to clear reports: " + error.message);
+    },
   });
 }

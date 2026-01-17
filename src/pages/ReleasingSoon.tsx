@@ -1,33 +1,31 @@
-import { SearchX } from "lucide-react";
+import { Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Countdown } from "@/components/addons/countdown";
 
-
 const ReleasingSoon = () => {
+  // Target date: February 1st, 2026
+  const targetDate = new Date("2026-02-01T00:00:00");
             
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted">
-      <div className="text-center flex flex-col items-center gap-4">
-        <SearchX className="h-6 w-6 text-danger" />
+      <div className="text-center flex flex-col items-center gap-6">
+        <Clock className="h-12 w-12 text-primary" />
 
         <h1 className="text-4xl font-bold">
-          Not finished yet!
+          Coming Soon!
         </h1>
 
         <p className="text-xl text-muted-foreground max-w-md">
-          Releasing soon! Further information and releasedate on our discord-server
+          We're working hard to bring you something amazing. Join our Discord for updates!
         </p>
 
         {/* Countdown */}
-        <div className="text-muted-foreground">
-          <Countdown targetDate={new Date("2026-01-02")} />
+        <div className="text-foreground">
+          <Countdown targetDate={targetDate} />
         </div>
-        <p className="text-sm text-muted-foreground">/\</p>
-<p className="text-sm text-muted-foreground">
-          Does not Work... I don't know why, but it doesn't work...
-        </p>
+        
         <p className="text-sm text-muted-foreground">
-          Release on 1.2.2026
+          Release on February 1st, 2026
         </p>
 
         {/* Button */}

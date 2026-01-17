@@ -24,11 +24,13 @@ export interface Server {
   is_promoted: boolean;
   is_pinned: boolean;
   is_bumped: boolean;
+  is_blocked: boolean;
   bump_expires_at: string | null;
   theme: string;
   created_at: string;
   updated_at: string;
   vote_count?: number;
+  report_count?: number;
   // Customization fields
   custom_card_data: unknown | null;
   custom_landing_data: unknown | null;
@@ -302,6 +304,52 @@ export function useUserVotes(userId: string | undefined) {
         .eq("user_id", userId);
       if (error) throw error;
       return data.map(v => v.server_id);
+    },
+    enabled: !!userId,
+  });
+}
+
+export function useReportServer() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ serverId, reason }: { serverId: string; reason?: string }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Please log in to report");
+
+      const { error } = await supabase
+        .from("server_reports")
+        .insert({ server_id: serverId, user_id: user.id, reason });
+
+      if (error) {
+        if (error.code === "23505") {
+          throw new Error("You have already reported this server");
+        }
+        throw error;
+      }
+      return { success: true };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["servers"] });
+      toast.success("Server reported. Thank you for helping keep our community safe.");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+}
+
+export function useUserReports(userId: string | undefined) {
+  return useQuery({
+    queryKey: ["user-reports", userId],
+    queryFn: async () => {
+      if (!userId) return [];
+      const { data, error } = await supabase
+        .from("server_reports")
+        .select("server_id")
+        .eq("user_id", userId);
+      if (error) throw error;
+      return data.map(r => r.server_id);
     },
     enabled: !!userId,
   });

@@ -112,6 +112,38 @@ export type Database = {
           },
         ]
       }
+      server_reports: {
+        Row: {
+          created_at: string
+          id: string
+          reason: string | null
+          server_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          reason?: string | null
+          server_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          reason?: string | null
+          server_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "server_reports_server_id_fkey"
+            columns: ["server_id"]
+            isOneToOne: false
+            referencedRelation: "servers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       server_votes: {
         Row: {
           id: string
@@ -158,6 +190,7 @@ export type Database = {
           has_custom_landing: boolean | null
           id: string
           invite_link: string | null
+          is_blocked: boolean | null
           is_bumped: boolean | null
           is_pinned: boolean | null
           is_promoted: boolean | null
@@ -189,6 +222,7 @@ export type Database = {
           has_custom_landing?: boolean | null
           id?: string
           invite_link?: string | null
+          is_blocked?: boolean | null
           is_bumped?: boolean | null
           is_pinned?: boolean | null
           is_promoted?: boolean | null
@@ -220,6 +254,7 @@ export type Database = {
           has_custom_landing?: boolean | null
           id?: string
           invite_link?: string | null
+          is_blocked?: boolean | null
           is_bumped?: boolean | null
           is_pinned?: boolean | null
           is_promoted?: boolean | null

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Server, AgeRating, useVoteForServer, useUserVotes, useReportServer, useUserReports } from "@/hooks/useServers";
 import { useDcsServerInfo, extractInviteCode } from "@/hooks/useDcsApi";
@@ -8,6 +9,7 @@ import { Users, ExternalLink, Shield, AlertTriangle, ThumbsUp, Sparkles, Zap, Co
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { ReportDialog } from "./ReportDialog";
 
 interface ServerCardProps {
   server: Server;
@@ -81,6 +83,7 @@ const themeStyles: Record<string, ThemeData> = {
 
 
 export function ServerCard({ server, index = 0, showActions, showCredits, onEdit, onCustomize }: ServerCardProps) {
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const ratingConfig = ageRatingConfig[server.age_rating];
   const { user } = useAuth();
   const { data: userVotes = [] } = useUserVotes(user?.id);
@@ -116,7 +119,7 @@ export function ServerCard({ server, index = 0, showActions, showCredits, onEdit
     voteForServer.mutate(server.id);
   };
 
-  const handleReport = (e: React.MouseEvent) => {
+  const handleReportClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (!user) {
@@ -127,7 +130,16 @@ export function ServerCard({ server, index = 0, showActions, showCredits, onEdit
       toast.info("You have already reported this server");
       return;
     }
-    reportServer.mutate({ serverId: server.id });
+    setReportDialogOpen(true);
+  };
+
+  const handleReportSubmit = (reason: string) => {
+    reportServer.mutate(
+      { serverId: server.id, reason },
+      {
+        onSuccess: () => setReportDialogOpen(false),
+      }
+    );
   };
 
   // Custom styles for fully customized cards
@@ -258,7 +270,7 @@ export function ServerCard({ server, index = 0, showActions, showCredits, onEdit
         <Button
           variant={hasReported ? "destructive" : "outline"}
           size="sm"
-          onClick={handleReport}
+          onClick={handleReportClick}
           disabled={!user || reportServer.isPending || hasReported}
           title={hasReported ? "Already reported" : "Report server"}
         >
@@ -310,6 +322,14 @@ export function ServerCard({ server, index = 0, showActions, showCredits, onEdit
           </Button>
         )}
       </div>
+
+      <ReportDialog
+        open={reportDialogOpen}
+        onOpenChange={setReportDialogOpen}
+        serverName={server.name}
+        onSubmit={handleReportSubmit}
+        isLoading={reportServer.isPending}
+      />
     </div>
   );
 }

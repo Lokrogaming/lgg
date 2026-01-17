@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -45,9 +46,12 @@ import {
   Coins,
   Sparkles,
   Zap,
-  Pin
+  Pin,
+  Flag,
+  Ban
 } from "lucide-react";
 import { toast } from "sonner";
+import { ReportsPanel } from "@/components/admin/ReportsPanel";
 
 export default function Admin() {
   const { user, loading: authLoading, isSiteOwner } = useAuth();
@@ -141,7 +145,7 @@ export default function Admin() {
         </div>
 
         {/* Stats */}
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5 mb-8">
           <div className="gaming-border p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-primary/20">
@@ -177,12 +181,12 @@ export default function Admin() {
           </div>
           <div className="gaming-border p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-primary/20">
-                <Pin className="h-5 w-5 text-primary" />
+              <div className="p-2 rounded-lg bg-destructive/20">
+                <Ban className="h-5 w-5 text-destructive" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Pinned</p>
-                <p className="text-2xl font-bold">{servers.filter(s => s.is_pinned).length}</p>
+                <p className="text-sm text-muted-foreground">Blocked</p>
+                <p className="text-2xl font-bold">{servers.filter(s => s.is_blocked).length}</p>
               </div>
             </div>
           </div>
@@ -199,19 +203,33 @@ export default function Admin() {
           </div>
         </div>
 
-        {/* Search */}
-        <div className="relative max-w-sm mb-6">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search servers..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-10"
-          />
-        </div>
+        {/* Tabs */}
+        <Tabs defaultValue="servers" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="servers" className="gap-2">
+              <ServerIcon className="h-4 w-4" />
+              Servers
+            </TabsTrigger>
+            <TabsTrigger value="reports" className="gap-2">
+              <Flag className="h-4 w-4" />
+              Reports
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Servers Table */}
-        <div className="gaming-border overflow-hidden">
+          <TabsContent value="servers" className="space-y-6">
+            {/* Search */}
+            <div className="relative max-w-sm">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search servers..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+
+            {/* Servers Table */}
+            <div className="gaming-border overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
@@ -339,7 +357,13 @@ export default function Admin() {
               )}
             </TableBody>
           </Table>
-        </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="reports">
+            <ReportsPanel />
+          </TabsContent>
+        </Tabs>
       </main>
 
       {/* Delete Confirmation */}

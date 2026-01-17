@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,6 +24,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { ReportDialog } from "@/components/servers/ReportDialog";
 
 const ageRatingConfig: Record<AgeRating, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; className?: string }> = {
   all_ages: { label: "All Ages", variant: "secondary" },
@@ -89,6 +91,7 @@ const themeStyles: Record<string, ThemeData> = {
 
 
 export default function ServerLanding() {
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const { serverId } = useParams<{ serverId: string }>();
   const { user } = useAuth();
   const { data: userVotes = [] } = useUserVotes(user?.id);
@@ -139,17 +142,26 @@ export default function ServerLanding() {
     voteForServer.mutate(server.id);
   };
 
-  const handleReport = () => {
+  const handleReportClick = () => {
     if (!user) {
       toast.error("Please log in to report servers");
       return;
     }
-    if (!server) return;
     if (hasReported) {
       toast.info("You have already reported this server");
       return;
     }
-    reportServer.mutate({ serverId: server.id });
+    setReportDialogOpen(true);
+  };
+
+  const handleReportSubmit = (reason: string) => {
+    if (!server) return;
+    reportServer.mutate(
+      { serverId: server.id, reason },
+      {
+        onSuccess: () => setReportDialogOpen(false),
+      }
+    );
   };
 
   if (isLoading) {
@@ -328,7 +340,7 @@ export default function ServerLanding() {
               <Button
                 variant={hasReported ? "destructive" : "outline"}
                 size="lg"
-                onClick={handleReport}
+                onClick={handleReportClick}
                 disabled={!user || reportServer.isPending || hasReported}
                 title={hasReported ? "Already reported" : "Report server"}
               >
@@ -424,7 +436,14 @@ export default function ServerLanding() {
           </div>
         </div>
       </section>
+
+      <ReportDialog
+        open={reportDialogOpen}
+        onOpenChange={setReportDialogOpen}
+        serverName={server.name}
+        onSubmit={handleReportSubmit}
+        isLoading={reportServer.isPending}
+      />
     </div>
   );
 }
-

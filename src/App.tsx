@@ -29,11 +29,6 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<ReleasingSoon />} />
-<<<<<<< HEAD
-            
-=======
-          {/* ADD ALL CUSTOM ROUTES ABOVE
->>>>>>> 63792f49b34beda2231539bab5c713714490dcc0
             <Route path="/auth" element={<Auth />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE 
             <Route path="/rules" element={<Rules />} />

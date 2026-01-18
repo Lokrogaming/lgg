@@ -1,18 +1,33 @@
-import { Clock } from "lucide-react";
+import { Clock, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Countdown } from "@/components/addons/countdown";
+import { useState, useEffect } from "react";
 
 const ReleasingSoon = () => {
   // Target date: February 1st, 2026
   const targetDate = new Date("2026-02-01T00:00:00");
+  const [isComplete, setIsComplete] = useState(false);
+
+  useEffect(() => {
+    const checkComplete = () => {
+      setIsComplete(new Date() >= targetDate);
+    };
+    checkComplete();
+    const interval = setInterval(checkComplete, 1000);
+    return () => clearInterval(interval);
+  }, [targetDate]);
             
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted">
       <div className="text-center flex flex-col items-center gap-6">
-        <Clock className="h-12 w-12 text-primary" />
+        {isComplete ? (
+          <CheckCircle className="h-12 w-12 text-green-500" />
+        ) : (
+          <Clock className="h-12 w-12 text-primary" />
+        )}
 
         <h1 className="text-4xl font-bold">
-          Coming Soon!
+          {isComplete ? "Adding the last few things" : "Coming Soon!"}
         </h1>
 
         <p className="text-xl text-muted-foreground max-w-md">

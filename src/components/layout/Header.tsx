@@ -60,6 +60,12 @@ export function Header() {
           >
             Announcements
           </Link>
+          <Link 
+            to="/partners" 
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Partners
+          </Link>
         </nav>
 
         {/* Desktop Auth */}

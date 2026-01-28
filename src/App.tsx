@@ -28,7 +28,8 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<ReleasingSoon />} />
+{/*
             <Route path="/auth" element={<Auth />} />
             
             <Route path="/rules" element={<Rules />} />
@@ -39,6 +40,7 @@ const App = () => (
             <Route path="/shop" element={<Shop />} />
             <Route path="/announcements" element={<Announcements />} />
             <Route path="/partners" element={<Partners />} />
+*/}
             <Route path="/server/:serverId" element={<ServerLanding />} />
             
              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

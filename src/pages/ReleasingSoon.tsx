@@ -25,9 +25,13 @@ const ReleasingSoon = () => {
       
 
         <h1 className="text-4xl font-bold">
-        Coming Soon!
+        Releasing Soon!
         </h1>
 
+        <h2 className="text-lg font-bold">
+        Stay tuned!
+        </h2>
+        
         <p className="text-xl text-muted-foreground max-w-md">
           We're working hard to bring you something amazing. Join our Discord for updates!
         </p>

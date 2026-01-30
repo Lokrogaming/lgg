@@ -21,7 +21,7 @@ const ReleasingSoon = () => {
     <div className="flex min-h-screen items-center justify-center bg-muted">
       <div className="text-center flex flex-col items-center gap-6">
     
-          <CheckCircle className="h-12 w-12 text-primary" />
+          <CheckCircle className="h-12 w-12 text-sucess" />
       
 
         <h1 className="text-4xl font-bold">

@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 
 const ReleasingSoon = () => {
   // Target date: February 1st, 2026
-  const targetDate = new Date("2026-01-31T00:00:00");
+  const targetDate = new Date("2026-02-1T00:00:00");
   const [isComplete, setIsComplete] = useState(false);
 
   useEffect(() => {
@@ -20,14 +20,12 @@ const ReleasingSoon = () => {
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted">
       <div className="text-center flex flex-col items-center gap-6">
-        {isComplete ? (
-          <CheckCircle className="h-12 w-12 text-green-500" />
-        ) : (
-          <Clock className="h-12 w-12 text-primary" />
-        )}
+    
+          <CheckCircle className="h-12 w-12 text-primary" />
+      
 
         <h1 className="text-4xl font-bold">
-          {isComplete ? "Adding the last few things" : "Coming Soon!"}
+        Coming Soon!
         </h1>
 
         <p className="text-xl text-muted-foreground max-w-md">

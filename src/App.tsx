@@ -29,23 +29,15 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<ReleasingSoon />} />
-{/*
             <Route path="/auth" element={<Auth />} />
-            
             <Route path="/rules" element={<Rules />} />
-            */}
             <Route path="/servers" element={<Servers />} />
-            {/*
             <Route path="/dashboard" element={<Dashboard />} />
-            */}
             <Route path="/admin" element={<Admin />} />
-            {/*
             <Route path="/settings" element={<Settings />} />
-            <Route path="/shop" element={<Shop />} /> */}
+            <Route path="/shop" element={<Shop />} />
             <Route path="/announcements" element={<Announcements />} />
-            {/*
             <Route path="/partners" element={<Partners />} />
-*/}
             <Route path="/server/:serverId" element={<ServerLanding />} />
             
              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

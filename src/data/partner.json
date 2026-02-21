@@ -16,6 +16,14 @@
   "tags": ["MC", "PVP"],
   "inviteUrl": "/server/87065bc0-4a1b-49b0-80e2-90ed2c394f13",
   "landingPageUrl": "https://lgg.lovable.app/server/87065bc0-4a1b-49b0-80e2-90ed2c394f13"
-}
-
+},
+  {
+  "id": "andresserver",
+  "name": "Andrew's Server",
+  "description": "Official Andrew Vikuk's server, Link to his youtube channel https://www.youtube.com/@AndrewVikuk",
+  "type": "discord",
+  "tags": ["andrew vikuk", "youtube", "ai", "community", "official"],
+  "inviteUrl": "/server/91405cd5-89f5-4f96-9fdc-1f169a68b72b",
+  "landingPageUrl": "/server/91405cd5-89f5-4f96-9fdc-1f169a68b72b"
+  },
 ]

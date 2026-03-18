@@ -50,47 +50,12 @@ export function generateDcsLink(shortCode: string): string {
 }
 
 // Create a DCS.lol short link from Discord invite URL
-export async function createDcsLink(discordUrl: string, customId?: string): Promise<DcsLinkResponse | null> {
-  try {
-    const response = await fetch("https://dcs.lol/api/v1/links", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        url: discordUrl,
-        customId: customId,
-      }),
-    });
-    
-    if (!response.ok) {
-      console.error("Status:", response.status, await response.text());
-      return null;
-    }
 
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      console.error("Failed to create DCS link:", error);
-      return null;
-    }
-    
-    const data = await response.json();
-    return {
-      id: data.id || "",
-      shortCode: data.shortCode || data.customId || "",
-      url: data.url || discordUrl,
-      shortUrl: data.shortUrl || `https://dcs.lol/${data.shortCode || data.customId}`,
-    };
-  } catch (error) {
-    console.error("Failed to create DCS link:", error);
-    return null;
-  }
-}
 
 // Fetch server info from dcs.lol API using invite code
 export async function fetchDcsServerInfo(inviteCode: string): Promise<DcsServerInfo | null> {
   try {
-    const response = await fetch(`https://dcs.lol/api/v1/discord/${inviteCode}`);
+    const response = await fetch(`https://discord.com/api/v10/${inviteCode}`);
     if (!response.ok) return null;
     
     const json = await response.json();

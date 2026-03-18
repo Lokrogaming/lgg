@@ -317,38 +317,7 @@ export function CreateServerDialog({ open, onOpenChange, onSuccess }: CreateServ
                 )}
               </div>
 
-              {/* DCS Link Generation */}
-              <div className="space-y-2">
-                <Label className="flex items-center gap-2">
-                  DCS.lol Short Link
-                </Label>
-                <div className="flex gap-2">
-                  <Input
-                    value={dcsLink || (inviteCode ? `https://dcs.lol/${inviteCode}` : "")}
-                    placeholder="Will be generated..."
-                    readOnly
-                    className="flex-1 bg-muted"
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleCreateDcsLink}
-                    disabled={creatingDcsLink || !discordInviteLink}
-                    title="Generate custom DCS link"
-                  >
-                    {creatingDcsLink ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : dcsShortCode ? (
-                      <Check className="h-4 w-4 text-success" />
-                    ) : (
-                      "Generate"
-                    )}
-                  </Button>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  This short link will be used for server invites
-                </p>
-              </div>
+             
 
               <AvatarUpload
                 value={avatarUrl}

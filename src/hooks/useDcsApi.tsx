@@ -53,7 +53,7 @@ export function extractInviteCode(inviteLink: string): string | null {
 // Fetch server info from dcs.lol API using invite code
 export async function fetchDcsServerInfo(inviteCode: string): Promise<DcsServerInfo | null> {
   try {
-    const response = await fetch(`https://discord.com/api/v10/invites/${inviteCode}`);
+    const response = await fetch(`https://dcs.lol/api/v1/discord/${inviteCode}`);
     if (!response.ok) return null;
     
     const json = await response.json();
@@ -67,7 +67,7 @@ export async function fetchDcsServerInfo(inviteCode: string): Promise<DcsServerI
     return {
       name: server?.name || "",
       description: server?.description || "",
-      icon: server?.icon || null, // API now returns full URL
+      icon: server?.icon || null, 
       splash: server?.splash || null,
       banner: server?.banner || null,
       memberCount: data.memberCount || 0,

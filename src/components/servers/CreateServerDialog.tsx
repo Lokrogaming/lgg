@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useCreateServer, AgeRating } from "@/hooks/useServers";
-import { extractInviteCode, fetchDcsServerInfo } from "@/hooks/useDcsApi";
+import { extractInviteCode, fetchDcsServerInfo, createDcsLink } from "@/hooks/useDcsApi";
 import { AvatarUpload } from "@/components/ui/avatar-upload";
 import { DescriptionGenerator } from "@/components/servers/DescriptionGenerator";
 import { Loader2, Link as LinkIcon, Bell, RefreshCw, Check, X } from "lucide-react";
@@ -97,7 +97,76 @@ export function CreateServerDialog({ open, onOpenChange, onSuccess }: CreateServ
     }
   };
 
-  
+  const handleCreateDcsLink = async () => {
+  if (!discordInviteLink) {
+    toast.error("Please enter a Discord invite link first");
+    return;
+  }
+
+  setCreatingDcsLink(true);
+  try {
+    const inviteCode = extractInviteCode(discordInviteLink);
+
+    if (!inviteCode) {
+      toast.error("Invalid Discord invite link");
+      return;
+    }
+
+    const serverPart = name
+      .toLowerCase()
+      .replace(/[^a-z0-9_-]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+
+    let customId = `${serverPart}-${inviteCode}`
+      .toLowerCase()
+      .replace(/[^a-z0-9_-]/g, "")
+      .substring(0, 32);
+
+    
+    if (customId.length < 3) {
+      customId = undefined;
+    }
+
+    const result = await createDcsLink(discordInviteLink, customId);
+
+    if (result) {
+      setDcsShortCode(result.shortCode);
+      setDcsLink(result.shortUrl);
+      toast.success("DCS.lol link created!");
+    } else {
+      toast.error("Could not create DCS link");
+    }
+  } catch {
+    toast.error("Failed to create DCS link");
+  } finally {
+    setCreatingDcsLink(false);
+  }
+};
+
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Ensure we have a DCS link if we have a Discord invite
+    let finalDcsShortCode = dcsShortCode;
+
+    if (discordInviteLink && !dcsShortCode) {
+      const inviteCode = extractInviteCode(discordInviteLink);
+
+      if (inviteCode) {
+        const serverPart = name
+          .toLowerCase()
+          .replace(/[^a-z0-9_-]+/g, "-")
+          .replace(/^-+|-+$/g, "");
+
+        const combined = `${serverPart}-${inviteCode}`
+          .toLowerCase()
+          .replace(/[^a-z0-9_-]/g, "")
+          .substring(0, 32);
+
+        finalDcsShortCode = combined.length >= 3 ? combined : inviteCode;
+      }
+    }
 
     await createServer.mutateAsync({
       name,
@@ -248,7 +317,38 @@ export function CreateServerDialog({ open, onOpenChange, onSuccess }: CreateServ
                 )}
               </div>
 
-             
+              {/* DCS Link Generation */}
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  DCS.lol Short Link
+                </Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={dcsLink || (inviteCode ? `https://dcs.lol/${inviteCode}` : "")}
+                    placeholder="Will be generated..."
+                    readOnly
+                    className="flex-1 bg-muted"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleCreateDcsLink}
+                    disabled={creatingDcsLink || !discordInviteLink}
+                    title="Generate custom DCS link"
+                  >
+                    {creatingDcsLink ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : dcsShortCode ? (
+                      <Check className="h-4 w-4 text-success" />
+                    ) : (
+                      "Generate"
+                    )}
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  This short link will be used for server invites
+                </p>
+              </div>
 
               <AvatarUpload
                 value={avatarUrl}

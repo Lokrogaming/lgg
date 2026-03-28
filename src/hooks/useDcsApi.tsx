@@ -45,7 +45,6 @@ export function extractInviteCode(inviteLink: string): string | null {
 }
 
 // Generate dcs.lol short link from invite code
-
 export function generateDcsLink(shortCode: string): string {
   return `https://dcs.lol/${shortCode}`;
 }
@@ -105,7 +104,7 @@ export async function fetchDcsServerInfo(inviteCode: string): Promise<DcsServerI
     return {
       name: server?.name || "",
       description: server?.description || "",
-      icon: server?.icon || null, 
+      icon: server?.icon || null, // API now returns full URL
       splash: server?.splash || null,
       banner: server?.banner || null,
       memberCount: data.memberCount || 0,
@@ -133,7 +132,13 @@ export function useDcsServerInfo(inviteCode: string | null) {
   });
 }
 
-
+export function useCreateDcsLink() {
+  return useMutation({
+    mutationFn: async ({ discordUrl, customId }: { discordUrl: string; customId?: string }) => {
+      return createDcsLink(discordUrl, customId);
+    },
+  });
+}
 
 // Get Discord icon URL 
 export function getDiscordIconUrl(guildId: string, iconHash: string): string {

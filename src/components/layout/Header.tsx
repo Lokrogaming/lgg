@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LogOut, Settings, LayoutDashboard, Crown, Menu, X, ShoppingBag } from "lucide-react";
+import lggLogo from "@/assets/lgg-logo.jpeg";
 import { useState } from "react";
 
 export function Header() {
@@ -26,9 +27,7 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-xl">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-3 group">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary glow-primary group-hover:scale-110 transition-transform">
-            <span className="text-xl font-bold text-primary-foreground">L</span>
-          </div>
+          <img src={lggLogo} alt="LGG Logo" className="h-10 w-10 rounded-xl object-cover group-hover:scale-110 transition-transform" />
           <span className="text-xl font-bold text-gradient-primary hidden sm:block">
             LGG
           </span>

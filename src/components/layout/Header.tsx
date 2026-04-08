@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LogOut, Settings, LayoutDashboard, Crown, Menu, X, ShoppingBag } from "lucide-react";
+import lggLogo from "@/assets/lgg-logo.jpeg";
 import { useState } from "react";
 
 export function Header() {

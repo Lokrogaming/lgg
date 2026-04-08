@@ -111,8 +111,8 @@ export async function fetchDcsServerInfo(inviteCode: string): Promise<DcsServerI
       onlineCount: data.onlineCount || 0,
       guildId: server?.id || "",
       inviteCode: inviteCode,
-      inviterId: data.inviter.id,
-      inviterName: data.inviter.username,
+      inviterId: data.inviter?.id ?? 0,
+      inviterName: data.inviter?.username ?? "",
     };
   } catch (error) {
     console.error("Failed to fetch DCS server info:", error);

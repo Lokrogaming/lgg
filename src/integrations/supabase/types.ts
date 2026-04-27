@@ -205,6 +205,7 @@ export type Database = {
           webhook_on_join: boolean | null
           webhook_on_milestone: boolean | null
           webhook_url: string | null
+          landing_link?: string | null
         }
         Insert: {
           age_rating?: Database["public"]["Enums"]["age_rating"] | null
@@ -237,6 +238,7 @@ export type Database = {
           webhook_on_join?: boolean | null
           webhook_on_milestone?: boolean | null
           webhook_url?: string | null
+          landing_link?: string | null
         }
         Update: {
           age_rating?: Database["public"]["Enums"]["age_rating"] | null
@@ -269,6 +271,7 @@ export type Database = {
           webhook_on_join?: boolean | null
           webhook_on_milestone?: boolean | null
           webhook_url?: string | null
+          landing_link?: string | null
         }
         Relationships: []
       }

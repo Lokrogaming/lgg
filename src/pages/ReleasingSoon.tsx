@@ -1,4 +1,4 @@
-import { Clock, CheckCircle } from "lucide-react";
+import { Clock, CircleX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Countdown } from "@/components/addons/countdown";
 import { useState, useEffect } from "react";
@@ -21,11 +21,11 @@ const ReleasingSoon = () => {
     <div className="flex min-h-screen items-center justify-center bg-muted">
       <div className="text-center flex flex-col items-center gap-6">
     
-          <CheckCircle className="h-12 w-12 text-green-500" />
+          <CircleX className="h-12 w-12 text-red-500" />
       
 
-        <h1 className="text-4xl font-bold">
-        Releasing Soon!
+        <h1 className="text-4xl font-bold text-red">
+        Currently in maintenance
         </h1>
 
         <h2 className="text-lg font-bold">
@@ -33,16 +33,16 @@ const ReleasingSoon = () => {
         </h2>
         
         <p className="text-xl text-muted-foreground max-w-md">
-          We're working hard to bring you something amazing. Join our Discord for updates!
+          We're working hard to fix some issues. Join our Discord for updates!
         </p>
 
-        {/* Countdown */}
+        {/* Countdown 
         <div className="text-foreground">
           <Countdown targetDate={targetDate} />
         </div>
-        
+        */}
         <p className="text-sm text-muted-foreground">
-          Release on February 1st, 2026
+          There are some errors, that we need to fix
         </p>
 
         {/* Button */}

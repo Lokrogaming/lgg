@@ -24,7 +24,7 @@ const ReleasingSoon = () => {
           <CircleX className="h-12 w-12 text-red-500" />
       
 
-        <h1 className="text-4xl font-bold text-danger">
+        <h1 className="text-4xl font-bold text-red-600">
         Currently in maintenance
         </h1>
 

@@ -24,13 +24,14 @@ const ReleasingSoon = () => {
           <CircleX className="h-12 w-12 text-red-500" />
       
 
-        <h1 className="text-4xl font-bold text-red">
+        <h1 className="text-4xl font-bold text-red-900">
         Currently in maintenance
         </h1>
 
+        {/*
         <h2 className="text-lg font-bold">
         Stay tuned!
-        </h2>
+        </h2>  */}
         
         <p className="text-xl text-muted-foreground max-w-md">
           We're working hard to fix some issues. Join our Discord for updates!

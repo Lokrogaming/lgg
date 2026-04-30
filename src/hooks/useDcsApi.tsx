@@ -134,15 +134,13 @@ banner: guild?.banner
 export function useDcsServerInfo(inviteCode: string | null) {
   return useQuery({
   queryKey: ["dcs-server-info", inviteCode],
-  queryFn: async () => {
-    if (!inviteCode) return null;
-    return fetchDcsServerInfo(inviteCode);
-  },
-  enabled: !!inviteCode,
-  staleTime: 5 * 60 * 1000,
-  retry: 1, // ❗ nicht endlos retryen
-  refetchOnWindowFocus: false, // ❗ verhindert Spam
-});
+    queryFn: async () => {
+      if (!inviteCode) return null;
+      return fetchDcsServerInfo(inviteCode);
+    },
+    enabled: !!inviteCode,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
 }
 
 export function useCreateDcsLink() {

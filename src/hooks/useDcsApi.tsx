@@ -90,7 +90,7 @@ export async function createDcsLink(discordUrl: string, customId?: string): Prom
 export async function fetchDcsServerInfo(inviteCode: string): Promise<DcsServerInfo | null> {
   try {
     
-    const response = await fetch(`https://discord.com{inviteCode}?with_counts=true`);
+    const response = await fetch(`https://discord.com/api/v10/invites/{inviteCode}?with_counts=true`);
     
     if (!response.ok) return null;
     

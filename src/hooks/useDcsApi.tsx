@@ -103,9 +103,17 @@ export async function fetchDcsServerInfo(inviteCode: string): Promise<DcsServerI
     return {
       name: guild?.name || "",
       description: guild?.description || data.profile?.description || "",
-      icon: guild?.icon ? `https://cdn.discordapp.com/${guild.id}/${guild.icon}.png` : null,
-      splash: guild?.splash ? `https://cdn.discordapp.com/${guild.id}/${guild.splash}.png` : null,
-      banner: guild?.banner ? `https://cdn.discordapp.com/${guild.id}/${guild.banner}.png` : null,
+      icon: guild?.icon 
+  ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png` 
+  : null,
+
+splash: guild?.splash 
+  ? `https://cdn.discordapp.com/splashes/${guild.id}/${guild.splash}.png` 
+  : null,
+
+banner: guild?.banner 
+  ? `https://cdn.discordapp.com/banners/${guild.id}/${guild.banner}.png` 
+  : null,
       
       
       memberCount: data.approximate_member_count || data.profile?.member_count || 0,

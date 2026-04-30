@@ -87,38 +87,41 @@ export async function createDcsLink(discordUrl: string, customId?: string): Prom
   }
 }
 
-// Fetch server info from dcs.lol API using invite code
 export async function fetchDcsServerInfo(inviteCode: string): Promise<DcsServerInfo | null> {
   try {
-    const response = await fetch(`https://dcs.lol/api/v1/discord/${inviteCode}`);
+    
+    const response = await fetch(`https://discord.com{inviteCode}?with_counts=true`);
+    
     if (!response.ok) return null;
     
-    const json = await response.json();
+    const data = await response.json();
     
-    // Handle new API response format: { success: true, data: { server: {...}, memberCount, onlineCount } }
-    if (!json.success ||!json.data) return null;
     
-    const data = json.data;
-    const server = data.server;
+    const guild = data.guild;
+    
     
     return {
-      name: server?.name || "",
-      description: server?.description || "",
-      icon: server?.icon || null, // API now returns full URL
-      splash: server?.splash || null,
-      banner: server?.banner || null,
-      memberCount: data.memberCount || 0,
-      onlineCount: data.onlineCount || 0,
-      guildId: server?.id || "",
-      inviteCode: inviteCode,
-      inviterId: data.inviter?.id ?? 0,
-      inviterName: data.inviter?.username ?? "",
+      name: guild?.name || "",
+      description: guild?.description || data.profile?.description || "",
+      icon: guild?.icon ? `https://discordapp.com{guild.id}/${guild.icon}.png` : null,
+      splash: guild?.splash ? `https://discordapp.com{guild.id}/${guild.splash}.png` : null,
+      banner: guild?.banner ? `https://discordapp.com{guild.id}/${guild.banner}.png` : null,
+      
+      
+      memberCount: data.approximate_member_count || data.profile?.member_count || 0,
+      onlineCount: data.approximate_presence_count || data.profile?.online_count || 0,
+      
+      guildId: guild?.id || "",
+      inviteCode: data.code || inviteCode,
+      inviterId: data.inviter?.id || "0",
+      inviterName: data.inviter?.username || "",
     };
   } catch (error) {
-    console.error("Failed to fetch DCS server info:", error);
+    console.error("Failed to fetch Discord server info:", error);
     return null;
   }
 }
+
 
 export function useDcsServerInfo(inviteCode: string | null) {
   return useQuery({

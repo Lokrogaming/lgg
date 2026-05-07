@@ -6,6 +6,7 @@ import { useMyServers } from "@/hooks/useServers";
 import { ServerCard } from "@/components/servers/ServerCard";
 import { CreateServerDialog } from "@/components/servers/CreateServerDialog";
 import { EditServerDialog } from "@/components/servers/EditServerDialog";
+import { CustomizationDialog } from "@/components/servers/CustomizationDialog";
 import { ThemeInventory } from "@/components/dashboard/ThemeInventory";
 import { Button } from "@/components/ui/button";
 import { Plus, Loader2, Server as ServerIcon, Coins, ShoppingBag, Palette } from "lucide-react";
@@ -19,6 +20,7 @@ export default function Dashboard() {
   const { servers, loading: serversLoading, refetch } = useMyServers(user?.id);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editingServer, setEditingServer] = useState<Server | null>(null);
+  const [customizingServer, setCustomizingServer] = useState<Server | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -129,6 +131,7 @@ export default function Dashboard() {
                     showActions
                     showCredits
                     onEdit={() => setEditingServer(server)}
+                    onCustomize={() => setCustomizingServer(server)}
                   />
                 ))}
               </div>
@@ -168,6 +171,14 @@ export default function Dashboard() {
             refetch();
             setEditingServer(null);
           }}
+        />
+      )}
+
+      {customizingServer && (
+        <CustomizationDialog
+          server={customizingServer}
+          open={!!customizingServer}
+          onOpenChange={(open) => !open && setCustomizingServer(null)}
         />
       )}
     </div>

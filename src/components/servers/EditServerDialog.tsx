@@ -102,7 +102,13 @@ export function EditServerDialog({ server, open, onOpenChange, onSuccess }: Edit
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
+    const cleanLink = landingLink.trim().toLowerCase().replace(/[^a-z0-9-_]/g, "");
+    if (hasCustomLink && landingLink && cleanLink !== landingLink.trim().toLowerCase()) {
+      toast.error("Custom link can only contain letters, numbers, '-' and '_'");
+      return;
+    }
+
     await updateServer.mutateAsync({
       id: server.id,
       name,
@@ -114,7 +120,12 @@ export function EditServerDialog({ server, open, onOpenChange, onSuccess }: Edit
       webhook_on_milestone: webhookOnMilestone,
       webhook_on_join: webhookOnJoin,
       milestone_threshold: milestoneThreshold,
+      ...(hasCustomLink ? { landing_link: cleanLink || null } : {}),
     });
+
+    onOpenChange(false);
+    onSuccess?.();
+  };
 
     onOpenChange(false);
     onSuccess?.();

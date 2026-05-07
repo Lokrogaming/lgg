@@ -90,17 +90,7 @@ export async function createDcsLink(discordUrl: string, customId?: string): Prom
 export async function fetchDcsServerInfo(inviteCode: string): Promise<DcsServerInfo | null> {
   try {
     
-    const response = await fetch(`https://discord.com/api/v10/invites/${inviteCode}?with_counts=true`, {
-		
-		method: 'GET',
-		headers: {
-		"X-RateLimit-Limit": "5",
-    "X-RateLimit-Remaining": "0",
-    "X-RateLimit-Reset": "1470173023",
-    "X-RateLimit-Reset-After": "1",
-    "X-RateLimit-Bucket": "abcd1234"
-		}
-	});
+    const response = await fetch(`https://discord.com/api/v10/invites/${inviteCode}?with_counts=true`);
     
     if (!response.ok) return null;
     

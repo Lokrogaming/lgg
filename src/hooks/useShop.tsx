@@ -109,6 +109,8 @@ export function usePurchaseItem() {
           .from("servers")
           .update({ is_promoted: true })
           .eq("id", serverId);
+      } else if (item.type === "custom_link") {
+        // Just a one-time unlock; nothing to apply on the server row.
       } else if (item.type === "theme") {
         const themeName = item.name.toLowerCase().replace(" theme", "").replace(" ", "-");
         await supabase

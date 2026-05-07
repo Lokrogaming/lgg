@@ -3,6 +3,18 @@ import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import { useAuth } from "@/hooks/useAuth";
 import { useServers, Server, useUpdateServer, useDeleteServer } from "@/hooks/useServers";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
+import { useHasCustomLink } from "@/hooks/useCustomLink";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -48,7 +60,8 @@ import {
   Zap,
   Pin,
   Flag,
-  Ban
+  Ban,
+  Link2
 } from "lucide-react";
 import { toast } from "sonner";
 import { ReportsPanel } from "@/components/admin/ReportsPanel";
@@ -58,8 +71,10 @@ export default function Admin() {
   const { servers, loading: serversLoading } = useServers();
   const [search, setSearch] = useState("");
   const [deleteConfirm, setDeleteConfirm] = useState<Server | null>(null);
+  const [linkEditServer, setLinkEditServer] = useState<Server | null>(null);
   const navigate = useNavigate();
-  
+  const queryClient = useQueryClient();
+
   const updateServer = useUpdateServer();
   const deleteServer = useDeleteServer();
 
@@ -118,6 +133,31 @@ export default function Admin() {
     if (!deleteConfirm) return;
     await deleteServer.mutateAsync(deleteConfirm.id);
     setDeleteConfirm(null);
+  };
+
+  const handleGrantCustomLink = async (server: Server) => {
+    // Find the custom_link shop item
+    const { data: item, error: itemErr } = await supabase
+      .from("shop_items")
+      .select("id")
+      .eq("type", "custom_link")
+      .maybeSingle();
+    if (itemErr || !item) {
+      toast.error("Custom link shop item not found");
+      return;
+    }
+    const { error } = await supabase.from("purchases").insert({
+      server_id: server.id,
+      item_id: item.id,
+      expires_at: null,
+    });
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    queryClient.invalidateQueries({ queryKey: ["custom-link-purchase", server.id] });
+    toast.success(`Granted custom link perk to ${server.name}`);
+    setLinkEditServer(server);
   };
 
   const totalCredits = servers.reduce((acc, s) => acc + (s.credits || 0), 0);
@@ -342,6 +382,15 @@ export default function Admin() {
                             Add 500 Credits
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => setLinkEditServer(server)}>
+                            <Link2 className="mr-2 h-4 w-4" />
+                            Edit Custom Link
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleGrantCustomLink(server)}>
+                            <Sparkles className="mr-2 h-4 w-4" />
+                            Grant Custom Link Perk
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
                           <DropdownMenuItem 
                             onClick={() => setDeleteConfirm(server)}
                             className="text-destructive"
@@ -383,6 +432,101 @@ export default function Admin() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {linkEditServer && (
+        <CustomLinkEditDialog
+          server={linkEditServer}
+          onClose={() => setLinkEditServer(null)}
+          onGrant={() => handleGrantCustomLink(linkEditServer)}
+          onSaved={() => setLinkEditServer(null)}
+        />
+      )}
     </div>
+  );
+}
+
+function CustomLinkEditDialog({
+  server,
+  onClose,
+  onGrant,
+  onSaved,
+}: {
+  server: Server;
+  onClose: () => void;
+  onGrant: () => void;
+  onSaved: () => void;
+}) {
+  const { data: hasCustomLink = false, isLoading } = useHasCustomLink(server.id);
+  const [slug, setSlug] = useState(server.landing_link || "");
+  const updateServer = useUpdateServer();
+
+  const handleSave = async () => {
+    const clean = slug.trim().toLowerCase().replace(/[^a-z0-9-_]/g, "");
+    if (slug && clean !== slug.trim().toLowerCase()) {
+      toast.error("Only letters, numbers, '-' and '_' allowed");
+      return;
+    }
+    await updateServer.mutateAsync({
+      id: server.id,
+      landing_link: clean || null,
+    });
+    onSaved();
+  };
+
+  return (
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Custom Link — {server.name}</DialogTitle>
+          <DialogDescription>
+            Set or change the custom landing link slug for this server.
+          </DialogDescription>
+        </DialogHeader>
+
+        {isLoading ? (
+          <Loader2 className="h-5 w-5 animate-spin mx-auto" />
+        ) : !hasCustomLink ? (
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              This server hasn't purchased the Custom Link perk yet.
+            </p>
+            <Button onClick={onGrant} variant="hero" className="w-full">
+              <Sparkles className="mr-2 h-4 w-4" />
+              Grant Custom Link Perk (Free)
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <Label htmlFor="admin-slug">Slug</Label>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground whitespace-nowrap">
+                {window.location.origin}/s/
+              </span>
+              <Input
+                id="admin-slug"
+                value={slug}
+                onChange={(e) => setSlug(e.target.value)}
+                placeholder="my-server"
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Letters, numbers, '-' and '_' only. Leave empty to clear.
+            </p>
+          </div>
+        )}
+
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
+            Close
+          </Button>
+          {hasCustomLink && (
+            <Button onClick={handleSave} disabled={updateServer.isPending}>
+              {updateServer.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Save
+            </Button>
+          )}
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -382,6 +382,15 @@ export default function Admin() {
                             Add 500 Credits
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => setLinkEditServer(server)}>
+                            <Link2 className="mr-2 h-4 w-4" />
+                            Edit Custom Link
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleGrantCustomLink(server)}>
+                            <Sparkles className="mr-2 h-4 w-4" />
+                            Grant Custom Link Perk
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
                           <DropdownMenuItem 
                             onClick={() => setDeleteConfirm(server)}
                             className="text-destructive"

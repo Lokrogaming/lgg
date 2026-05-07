@@ -38,6 +38,7 @@ export interface Server {
   has_custom_landing: boolean;
   dcs_short_code: string | null;
   guild_id: string | null;
+  landing_link: string | null;
 }
 
 export function useServers() {

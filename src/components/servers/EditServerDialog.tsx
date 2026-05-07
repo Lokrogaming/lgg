@@ -249,6 +249,35 @@ export function EditServerDialog({ server, open, onOpenChange, onSuccess }: Edit
                 fallback={name || "S"}
                 label="Server Avatar"
               />
+
+              <div className="space-y-2 pt-4 border-t border-border">
+                <Label htmlFor="landing-link" className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-warning" />
+                  Custom Landing Link
+                  {!hasCustomLink && (
+                    <span className="text-xs text-muted-foreground font-normal">
+                      (Locked — purchase in shop)
+                    </span>
+                  )}
+                </Label>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground whitespace-nowrap">
+                    {window.location.origin}/s/
+                  </span>
+                  <Input
+                    id="landing-link"
+                    value={landingLink}
+                    onChange={(e) => setLandingLink(e.target.value)}
+                    placeholder="my-server"
+                    disabled={!hasCustomLink}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {hasCustomLink
+                    ? "Choose a memorable URL slug. Letters, numbers, '-' and '_' only."
+                    : "Unlock a custom slug for 2000 credits in the shop."}
+                </p>
+              </div>
             </TabsContent>
 
             <TabsContent value="webhooks" className="space-y-4 mt-4">

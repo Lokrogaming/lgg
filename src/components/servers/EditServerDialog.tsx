@@ -30,10 +30,11 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useUpdateServer, useDeleteServer, Server, AgeRating } from "@/hooks/useServers";
+import { useHasCustomLink } from "@/hooks/useCustomLink";
 import { extractInviteCode, fetchDcsServerInfo } from "@/hooks/useDcsApi";
 import { AvatarUpload } from "@/components/ui/avatar-upload";
 import { DescriptionGenerator } from "@/components/servers/DescriptionGenerator";
-import { Loader2, Link, Bell, Trash2, RefreshCw } from "lucide-react";
+import { Loader2, Link, Bell, Trash2, RefreshCw, Sparkles } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 
@@ -54,10 +55,12 @@ export function EditServerDialog({ server, open, onOpenChange, onSuccess }: Edit
   const [webhookOnMilestone, setWebhookOnMilestone] = useState(server.webhook_on_milestone);
   const [webhookOnJoin, setWebhookOnJoin] = useState(server.webhook_on_join);
   const [milestoneThreshold, setMilestoneThreshold] = useState(server.milestone_threshold);
+  const [landingLink, setLandingLink] = useState(server.landing_link || "");
   const [fetching, setFetching] = useState(false);
 
   const updateServer = useUpdateServer();
   const deleteServer = useDeleteServer();
+  const { data: hasCustomLink = false } = useHasCustomLink(server.id);
 
   useEffect(() => {
     setName(server.name);
@@ -69,6 +72,7 @@ export function EditServerDialog({ server, open, onOpenChange, onSuccess }: Edit
     setWebhookOnMilestone(server.webhook_on_milestone);
     setWebhookOnJoin(server.webhook_on_join);
     setMilestoneThreshold(server.milestone_threshold);
+    setLandingLink(server.landing_link || "");
   }, [server]);
 
   const handleFetchFromDiscord = async () => {

@@ -432,6 +432,101 @@ export default function Admin() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {linkEditServer && (
+        <CustomLinkEditDialog
+          server={linkEditServer}
+          onClose={() => setLinkEditServer(null)}
+          onGrant={() => handleGrantCustomLink(linkEditServer)}
+          onSaved={() => setLinkEditServer(null)}
+        />
+      )}
     </div>
+  );
+}
+
+function CustomLinkEditDialog({
+  server,
+  onClose,
+  onGrant,
+  onSaved,
+}: {
+  server: Server;
+  onClose: () => void;
+  onGrant: () => void;
+  onSaved: () => void;
+}) {
+  const { data: hasCustomLink = false, isLoading } = useHasCustomLink(server.id);
+  const [slug, setSlug] = useState(server.landing_link || "");
+  const updateServer = useUpdateServer();
+
+  const handleSave = async () => {
+    const clean = slug.trim().toLowerCase().replace(/[^a-z0-9-_]/g, "");
+    if (slug && clean !== slug.trim().toLowerCase()) {
+      toast.error("Only letters, numbers, '-' and '_' allowed");
+      return;
+    }
+    await updateServer.mutateAsync({
+      id: server.id,
+      landing_link: clean || null,
+    });
+    onSaved();
+  };
+
+  return (
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Custom Link — {server.name}</DialogTitle>
+          <DialogDescription>
+            Set or change the custom landing link slug for this server.
+          </DialogDescription>
+        </DialogHeader>
+
+        {isLoading ? (
+          <Loader2 className="h-5 w-5 animate-spin mx-auto" />
+        ) : !hasCustomLink ? (
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              This server hasn't purchased the Custom Link perk yet.
+            </p>
+            <Button onClick={onGrant} variant="hero" className="w-full">
+              <Sparkles className="mr-2 h-4 w-4" />
+              Grant Custom Link Perk (Free)
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <Label htmlFor="admin-slug">Slug</Label>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground whitespace-nowrap">
+                {window.location.origin}/s/
+              </span>
+              <Input
+                id="admin-slug"
+                value={slug}
+                onChange={(e) => setSlug(e.target.value)}
+                placeholder="my-server"
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Letters, numbers, '-' and '_' only. Leave empty to clear.
+            </p>
+          </div>
+        )}
+
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
+            Close
+          </Button>
+          {hasCustomLink && (
+            <Button onClick={handleSave} disabled={updateServer.isPending}>
+              {updateServer.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Save
+            </Button>
+          )}
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

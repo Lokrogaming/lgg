@@ -91,7 +91,7 @@ export async function fetchDcsServerInfo(inviteCode: string): Promise<DcsServerI
   try {
     
     const response = await fetch(`https://discord.com/api/v10/invites/${inviteCode}?with_counts=true`, {
-		// learn more about this API here: https://graphql-pokemon2.vercel.app/
+		
 		method: 'GET',
 		headers: {
 		"X-RateLimit-Limit": "5",

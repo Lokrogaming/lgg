@@ -92,7 +92,7 @@ const themeStyles: Record<string, ThemeData> = {
 
 export default function ServerLanding() {
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
-  const { serverId } = useParams<{ serverId: string }>();
+  const { serverId, slug } = useParams<{ serverId?: string; slug?: string }>();
   const { user } = useAuth();
   const { data: userVotes = [] } = useUserVotes(user?.id);
   const { data: userReports = [] } = useUserReports(user?.id);
@@ -100,28 +100,27 @@ export default function ServerLanding() {
   const reportServer = useReportServer();
 
   const { data: server, isLoading } = useQuery({
-    queryKey: ["server", serverId],
+    queryKey: ["server", serverId, slug],
     queryFn: async () => {
-      if (!serverId) return null;
-      
-      // Get server with vote count
-      const { data, error } = await supabase
-        .from("servers")
-        .select("*")
-        .eq("id", serverId)
-        .single();
+      if (!serverId && !slug) return null;
+
+      const base = supabase.from("servers").select("*");
+      const { data, error } = await (serverId
+        ? base.eq("id", serverId)
+        : base.eq("landing_link", slug!)
+      ).maybeSingle();
 
       if (error) throw error;
+      if (!data) return null;
 
-      // Get vote count
       const { count } = await supabase
         .from("server_votes")
         .select("*", { count: "exact", head: true })
-        .eq("server_id", serverId);
+        .eq("server_id", data.id);
 
       return { ...data, vote_count: count || 0 } as Server;
     },
-    enabled: !!serverId,
+    enabled: !!serverId || !!slug,
   });
 
   const inviteCode = server?.dcs_short_code || (server?.invite_link ? extractInviteCode(server.invite_link) : null);

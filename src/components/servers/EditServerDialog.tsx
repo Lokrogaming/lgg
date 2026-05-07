@@ -30,10 +30,11 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useUpdateServer, useDeleteServer, Server, AgeRating } from "@/hooks/useServers";
+import { useHasCustomLink } from "@/hooks/useCustomLink";
 import { extractInviteCode, fetchDcsServerInfo } from "@/hooks/useDcsApi";
 import { AvatarUpload } from "@/components/ui/avatar-upload";
 import { DescriptionGenerator } from "@/components/servers/DescriptionGenerator";
-import { Loader2, Link, Bell, Trash2, RefreshCw } from "lucide-react";
+import { Loader2, Link, Bell, Trash2, RefreshCw, Sparkles } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 
@@ -54,10 +55,12 @@ export function EditServerDialog({ server, open, onOpenChange, onSuccess }: Edit
   const [webhookOnMilestone, setWebhookOnMilestone] = useState(server.webhook_on_milestone);
   const [webhookOnJoin, setWebhookOnJoin] = useState(server.webhook_on_join);
   const [milestoneThreshold, setMilestoneThreshold] = useState(server.milestone_threshold);
+  const [landingLink, setLandingLink] = useState(server.landing_link || "");
   const [fetching, setFetching] = useState(false);
 
   const updateServer = useUpdateServer();
   const deleteServer = useDeleteServer();
+  const { data: hasCustomLink = false } = useHasCustomLink(server.id);
 
   useEffect(() => {
     setName(server.name);
@@ -69,6 +72,7 @@ export function EditServerDialog({ server, open, onOpenChange, onSuccess }: Edit
     setWebhookOnMilestone(server.webhook_on_milestone);
     setWebhookOnJoin(server.webhook_on_join);
     setMilestoneThreshold(server.milestone_threshold);
+    setLandingLink(server.landing_link || "");
   }, [server]);
 
   const handleFetchFromDiscord = async () => {
@@ -98,7 +102,13 @@ export function EditServerDialog({ server, open, onOpenChange, onSuccess }: Edit
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
+    const cleanLink = landingLink.trim().toLowerCase().replace(/[^a-z0-9-_]/g, "");
+    if (hasCustomLink && landingLink && cleanLink !== landingLink.trim().toLowerCase()) {
+      toast.error("Custom link can only contain letters, numbers, '-' and '_'");
+      return;
+    }
+
     await updateServer.mutateAsync({
       id: server.id,
       name,
@@ -110,6 +120,7 @@ export function EditServerDialog({ server, open, onOpenChange, onSuccess }: Edit
       webhook_on_milestone: webhookOnMilestone,
       webhook_on_join: webhookOnJoin,
       milestone_threshold: milestoneThreshold,
+      ...(hasCustomLink ? { landing_link: cleanLink || null } : {}),
     });
 
     onOpenChange(false);
@@ -238,6 +249,35 @@ export function EditServerDialog({ server, open, onOpenChange, onSuccess }: Edit
                 fallback={name || "S"}
                 label="Server Avatar"
               />
+
+              <div className="space-y-2 pt-4 border-t border-border">
+                <Label htmlFor="landing-link" className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-warning" />
+                  Custom Landing Link
+                  {!hasCustomLink && (
+                    <span className="text-xs text-muted-foreground font-normal">
+                      (Locked — purchase in shop)
+                    </span>
+                  )}
+                </Label>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground whitespace-nowrap">
+                    {window.location.origin}/s/
+                  </span>
+                  <Input
+                    id="landing-link"
+                    value={landingLink}
+                    onChange={(e) => setLandingLink(e.target.value)}
+                    placeholder="my-server"
+                    disabled={!hasCustomLink}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {hasCustomLink
+                    ? "Choose a memorable URL slug. Letters, numbers, '-' and '_' only."
+                    : "Unlock a custom slug for 2000 credits in the shop."}
+                </p>
+              </div>
             </TabsContent>
 
             <TabsContent value="webhooks" className="space-y-4 mt-4">

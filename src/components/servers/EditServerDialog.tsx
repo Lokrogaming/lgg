@@ -127,10 +127,6 @@ export function EditServerDialog({ server, open, onOpenChange, onSuccess }: Edit
     onSuccess?.();
   };
 
-    onOpenChange(false);
-    onSuccess?.();
-  };
-
   const handleDelete = async () => {
     await deleteServer.mutateAsync(server.id);
     onOpenChange(false);

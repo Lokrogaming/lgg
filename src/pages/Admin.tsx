@@ -3,6 +3,18 @@ import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import { useAuth } from "@/hooks/useAuth";
 import { useServers, Server, useUpdateServer, useDeleteServer } from "@/hooks/useServers";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
+import { useHasCustomLink } from "@/hooks/useCustomLink";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -48,7 +60,8 @@ import {
   Zap,
   Pin,
   Flag,
-  Ban
+  Ban,
+  Link2
 } from "lucide-react";
 import { toast } from "sonner";
 import { ReportsPanel } from "@/components/admin/ReportsPanel";

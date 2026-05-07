@@ -71,8 +71,10 @@ export default function Admin() {
   const { servers, loading: serversLoading } = useServers();
   const [search, setSearch] = useState("");
   const [deleteConfirm, setDeleteConfirm] = useState<Server | null>(null);
+  const [linkEditServer, setLinkEditServer] = useState<Server | null>(null);
   const navigate = useNavigate();
-  
+  const queryClient = useQueryClient();
+
   const updateServer = useUpdateServer();
   const deleteServer = useDeleteServer();
 
@@ -131,6 +133,31 @@ export default function Admin() {
     if (!deleteConfirm) return;
     await deleteServer.mutateAsync(deleteConfirm.id);
     setDeleteConfirm(null);
+  };
+
+  const handleGrantCustomLink = async (server: Server) => {
+    // Find the custom_link shop item
+    const { data: item, error: itemErr } = await supabase
+      .from("shop_items")
+      .select("id")
+      .eq("type", "custom_link")
+      .maybeSingle();
+    if (itemErr || !item) {
+      toast.error("Custom link shop item not found");
+      return;
+    }
+    const { error } = await supabase.from("purchases").insert({
+      server_id: server.id,
+      item_id: item.id,
+      expires_at: null,
+    });
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    queryClient.invalidateQueries({ queryKey: ["custom-link-purchase", server.id] });
+    toast.success(`Granted custom link perk to ${server.name}`);
+    setLinkEditServer(server);
   };
 
   const totalCredits = servers.reduce((acc, s) => acc + (s.credits || 0), 0);

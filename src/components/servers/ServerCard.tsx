@@ -231,15 +231,7 @@ export function ServerCard({ server, index = 0, showActions, showCredits, onEdit
               {ratingConfig.label}
             </Badge>
             
-            <div className="flex items-center gap-1 text-sm text-muted-foreground">
-              <Users className="h-4 w-4" />
-              <span>{memberCount.toLocaleString()}</span>
-            </div>
-
-            <div className="flex items-center gap-1 text-sm text-success">
-              <Wifi className="h-4 w-4" />
-              <span>{onlineCount.toLocaleString()}</span>
-            </div>
+            
 
             <div className="flex items-center gap-1 text-sm text-muted-foreground">
               <ThumbsUp className="h-4 w-4" />

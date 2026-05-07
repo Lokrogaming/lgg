@@ -308,8 +308,8 @@ export function ServerCard({ server, index = 0, showActions, showCredits, onEdit
           </Button>
         )}
 
-        {showActions && onCustomize && server.has_custom_card && (
-          <Button variant="outline" onClick={onCustomize}>
+        {showActions && onCustomize && (
+          <Button variant="outline" onClick={onCustomize} title="Customize">
             <Palette className="h-4 w-4" />
           </Button>
         )}

@@ -290,23 +290,8 @@ export default function ServerLanding() {
 
             {/* Stats */}
             <div className="flex justify-center gap-8 mb-6">
-              <div className="text-center">
-                <div 
-                  className="flex items-center justify-center gap-2 text-3xl font-bold"
-                  style={accentColor ? { color: accentColor } : undefined}
-                >
-                  <Users className="h-6 w-6" />
-                  {memberCount.toLocaleString()}
-                </div>
-                <p className="text-sm text-muted-foreground">Members</p>
-              </div>
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-2 text-3xl font-bold text-success">
-                  <Wifi className="h-6 w-6" />
-                  {onlineCount.toLocaleString()}
-                </div>
-                <p className="text-sm text-muted-foreground">Online</p>
-              </div>
+              
+                
               <div className="text-center">
                 <div className="flex items-center justify-center gap-2 text-3xl font-bold text-warning">
                   <ThumbsUp className="h-6 w-6" />

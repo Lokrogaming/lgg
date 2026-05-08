@@ -183,7 +183,7 @@ export function ServerCard({ server, index = 0, showActions, showCredits, onEdit
         {server.has_custom_card && !isBlocked && (
           <Badge variant="outline" className="text-xs bg-background/50">
             <Palette className="h-3 w-3 mr-1" />
-            Custom
+            
           </Badge>
         )}
         {server.is_promoted && !isBlocked && (

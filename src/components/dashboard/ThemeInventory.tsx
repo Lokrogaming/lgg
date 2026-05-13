@@ -58,13 +58,13 @@ export function ThemeInventory({ userId }: ThemeInventoryProps) {
     const themeName = purchase.shop_items.name
       .toLowerCase()
       .replace(" theme", "")
-      .replace(/\s+/g, "");
+      .replace(/\s+/g, "-");
     
     applyTheme.mutate({ serverId, themeName });
   };
 
   const getThemeKey = (name: string) => {
-    return name.toLowerCase().replace(" theme", "").replace(/\s+/g, "");
+    return name.toLowerCase().replace(" theme", "").replace(/\s+/g, "-");
   };
 
   return (

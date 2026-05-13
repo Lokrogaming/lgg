@@ -71,21 +71,23 @@ const themeStyles: Record<string, ThemeData> = {
     fontFamily: "Space Grotesk, sans-serif",
     accentColor: "#9333ea",
   },
-
-  // Neues Theme: Blood Moon
-  bloodMoon: {
-    background: "linear-gradient(135deg, rgba(139, 0, 0, 0.15), rgba(220, 20, 60, 0.15))",
-    borderColor: "rgba(220, 20, 60, 0.5)",
-    fontFamily: "Creepster, cursive",
-    accentColor: "#dc143c",
+  "blood-moon": {
+    background: "linear-gradient(135deg, rgba(28, 0, 0, 0.15), rgba(153, 27, 27, 0.15))",
+    borderColor: "rgba(239, 68, 68, 0.5)",
+    fontFamily: "Cinzel, serif",
+    accentColor: "#ef4444",
   },
-
-  // Neues Theme: Dark Cosmic
-  darkCosmic: {
-    background: "linear-gradient(135deg, rgba(25, 25, 112, 0.15), rgba(0, 0, 0, 0.15))",
-    borderColor: "rgba(72, 61, 139, 0.5)",
-    fontFamily: "Orbitron, sans-serif",
-    accentColor: "#483d8b",
+  "dark-cosmic": {
+    background: "linear-gradient(135deg, rgba(15, 23, 42, 0.15), rgba(88, 28, 135, 0.15))",
+    borderColor: "rgba(167, 139, 250, 0.5)",
+    fontFamily: "Rajdhani, sans-serif",
+    accentColor: "#a78bfa",
+  },
+  "astro-space": {
+    background: "linear-gradient(135deg, rgba(2, 6, 23, 0.15), rgba(30, 41, 59, 0.15))",
+    borderColor: "rgba(148, 163, 184, 0.5)",
+    fontFamily: "Space Mono, monospace",
+    accentColor: "#94a3b8",
   },
 };
 

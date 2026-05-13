@@ -75,7 +75,7 @@ const themeStyles: Record<string, ThemeData> = {
 };
 
 export function ThemePreview({ themeName }: ThemePreviewProps) {
-  const themeKey = themeName.toLowerCase();
+  const themeKey = themeName.toLowerCase().replace(" theme", "").replace(/\s+/g, "-");
   const theme = themeStyles[themeKey];
 
   if (!theme) return null;

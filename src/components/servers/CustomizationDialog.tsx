@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Server, useUpdateServer } from "@/hooks/useServers";
-import { Loader2, Palette, Layout, Type } from "lucide-react";
+import { Loader2, Palette, Layout, Type, RotateCcw } from "lucide-react";
 
 interface CustomizationDialogProps {
   server: Server;
@@ -122,6 +122,17 @@ export function CustomizationDialog({ server, open, onOpenChange }: Customizatio
       has_custom_landing: true,
     });
 
+    onOpenChange(false);
+  };
+
+  const handleReset = async () => {
+    await updateServer.mutateAsync({
+      id: server.id,
+      custom_card_data: null,
+      custom_landing_data: null,
+      has_custom_card: false,
+      has_custom_landing: false,
+    });
     onOpenChange(false);
   };
 
@@ -370,18 +381,30 @@ export function CustomizationDialog({ server, open, onOpenChange }: Customizatio
           </TabsContent>
         </Tabs>
 
-        <div className="flex justify-end gap-2 pt-4 border-t">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          <Button 
-            variant="hero" 
-            onClick={handleSave}
+        <div className="flex justify-between gap-2 pt-4 border-t">
+          <Button
+            variant="outline"
+            className="text-destructive hover:text-destructive hover:bg-destructive/10"
+            onClick={handleReset}
             disabled={updateServer.isPending}
           >
             {updateServer.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Save Customization
+            <RotateCcw className="mr-2 h-4 w-4" />
+            Reset Customization
           </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => onOpenChange(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="hero"
+              onClick={handleSave}
+              disabled={updateServer.isPending}
+            >
+              {updateServer.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Save Customization
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

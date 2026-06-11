@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Server, useUpdateServer } from "@/hooks/useServers";
-import { Loader2, Palette, Layout, Type } from "lucide-react";
+import { Loader2, Palette, Layout, Type, RotateCcw } from "lucide-react";
 
 interface CustomizationDialogProps {
   server: Server;

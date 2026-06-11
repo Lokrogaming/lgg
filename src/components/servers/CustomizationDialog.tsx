@@ -381,18 +381,30 @@ export function CustomizationDialog({ server, open, onOpenChange }: Customizatio
           </TabsContent>
         </Tabs>
 
-        <div className="flex justify-end gap-2 pt-4 border-t">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          <Button 
-            variant="hero" 
-            onClick={handleSave}
+        <div className="flex justify-between gap-2 pt-4 border-t">
+          <Button
+            variant="outline"
+            className="text-destructive hover:text-destructive hover:bg-destructive/10"
+            onClick={handleReset}
             disabled={updateServer.isPending}
           >
             {updateServer.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Save Customization
+            <RotateCcw className="mr-2 h-4 w-4" />
+            Reset Customization
           </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => onOpenChange(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="hero"
+              onClick={handleSave}
+              disabled={updateServer.isPending}
+            >
+              {updateServer.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Save Customization
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

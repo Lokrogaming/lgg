@@ -125,6 +125,17 @@ export function CustomizationDialog({ server, open, onOpenChange }: Customizatio
     onOpenChange(false);
   };
 
+  const handleReset = async () => {
+    await updateServer.mutateAsync({
+      id: server.id,
+      custom_card_data: null,
+      custom_landing_data: null,
+      has_custom_card: false,
+      has_custom_landing: false,
+    });
+    onOpenChange(false);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">

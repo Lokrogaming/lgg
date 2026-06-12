@@ -116,7 +116,7 @@ export default function Dashboard() {
           <TabsContent value="servers">
             {/* Server Grid */}
             {serversLoading ? (
-              <div className="grid gap-6 sm:grid-cols-2">
+              <div className="grid gap-6 sm:grid-cols-1 xl:grid-cols-2">
                 {[...Array(3)].map((_, i) => (
                   <div key={i} className="gaming-border h-64 animate-pulse bg-muted/50" />
                 ))}

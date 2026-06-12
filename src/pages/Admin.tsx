@@ -90,6 +90,7 @@ export default function Admin() {
   const [search, setSearch] = useState("");
   const [deleteConfirm, setDeleteConfirm] = useState<Server | null>(null);
   const [linkEditServer, setLinkEditServer] = useState<Server | null>(null);
+  const [themeEditServer, setThemeEditServer] = useState<Server | null>(null);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 

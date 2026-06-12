@@ -83,6 +83,7 @@ const AVAILABLE_THEMES = [
   { key: "astro-space", label: "Astro Space" },
 ];
 import { ReportsPanel } from "@/components/admin/ReportsPanel";
+import { ShopThemesPanel } from "@/components/admin/ShopThemesPanel";
 
 export default function Admin() {
   const { user, loading: authLoading, isSiteOwner } = useAuth();

@@ -61,9 +61,27 @@ import {
   Pin,
   Flag,
   Ban,
-  Link2
+  Link2,
+  Palette
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
+
+const AVAILABLE_THEMES = [
+  { key: "default", label: "Default" },
+  { key: "neon", label: "Neon" },
+  { key: "gold", label: "Gold" },
+  { key: "galaxy", label: "Galaxy" },
+  { key: "blood-moon", label: "Blood Moon" },
+  { key: "dark-cosmic", label: "Dark Cosmic" },
+  { key: "astro-space", label: "Astro Space" },
+];
 import { ReportsPanel } from "@/components/admin/ReportsPanel";
 
 export default function Admin() {

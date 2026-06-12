@@ -440,6 +440,10 @@ export default function Admin() {
           <TabsContent value="reports">
             <ReportsPanel />
           </TabsContent>
+
+          <TabsContent value="themes">
+            <ShopThemesPanel />
+          </TabsContent>
         </Tabs>
       </main>
 

@@ -409,6 +409,10 @@ export default function Admin() {
                             <Sparkles className="mr-2 h-4 w-4" />
                             Grant Custom Link Perk
                           </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setThemeEditServer(server)}>
+                            <Palette className="mr-2 h-4 w-4" />
+                            Change Theme
+                          </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem 
                             onClick={() => setDeleteConfirm(server)}

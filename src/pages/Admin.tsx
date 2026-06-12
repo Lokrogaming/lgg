@@ -61,9 +61,27 @@ import {
   Pin,
   Flag,
   Ban,
-  Link2
+  Link2,
+  Palette
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
+
+const AVAILABLE_THEMES = [
+  { key: "default", label: "Default" },
+  { key: "neon", label: "Neon" },
+  { key: "gold", label: "Gold" },
+  { key: "galaxy", label: "Galaxy" },
+  { key: "blood-moon", label: "Blood Moon" },
+  { key: "dark-cosmic", label: "Dark Cosmic" },
+  { key: "astro-space", label: "Astro Space" },
+];
 import { ReportsPanel } from "@/components/admin/ReportsPanel";
 
 export default function Admin() {
@@ -72,6 +90,7 @@ export default function Admin() {
   const [search, setSearch] = useState("");
   const [deleteConfirm, setDeleteConfirm] = useState<Server | null>(null);
   const [linkEditServer, setLinkEditServer] = useState<Server | null>(null);
+  const [themeEditServer, setThemeEditServer] = useState<Server | null>(null);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -390,6 +409,10 @@ export default function Admin() {
                             <Sparkles className="mr-2 h-4 w-4" />
                             Grant Custom Link Perk
                           </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setThemeEditServer(server)}>
+                            <Palette className="mr-2 h-4 w-4" />
+                            Change Theme
+                          </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem 
                             onClick={() => setDeleteConfirm(server)}
@@ -441,7 +464,76 @@ export default function Admin() {
           onSaved={() => setLinkEditServer(null)}
         />
       )}
+
+      {themeEditServer && (
+        <ThemeEditDialog
+          server={themeEditServer}
+          onClose={() => setThemeEditServer(null)}
+          onSave={async (theme) => {
+            await updateServer.mutateAsync({ id: themeEditServer.id, theme });
+            toast.success(`Theme updated for ${themeEditServer.name}`);
+            setThemeEditServer(null);
+          }}
+        />
+      )}
     </div>
+  );
+}
+
+function ThemeEditDialog({
+  server,
+  onClose,
+  onSave,
+}: {
+  server: Server;
+  onClose: () => void;
+  onSave: (theme: string) => Promise<void>;
+}) {
+  const [theme, setTheme] = useState(server.theme || "default");
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await onSave(theme);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Change Theme — {server.name}</DialogTitle>
+          <DialogDescription>
+            Apply any theme to this server, no purchase required.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-3">
+          <Label>Theme</Label>
+          <Select value={theme} onValueChange={setTheme}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select a theme" />
+            </SelectTrigger>
+            <SelectContent>
+              {AVAILABLE_THEMES.map((t) => (
+                <SelectItem key={t.key} value={t.key}>
+                  {t.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button onClick={handleSave} disabled={saving}>
+            {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Apply Theme
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 

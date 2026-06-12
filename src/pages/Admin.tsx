@@ -274,6 +274,10 @@ export default function Admin() {
               <Flag className="h-4 w-4" />
               Reports
             </TabsTrigger>
+            <TabsTrigger value="themes" className="gap-2">
+              <Palette className="h-4 w-4" />
+              Shop Themes
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="servers" className="space-y-6">

@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Server, AgeRating, useVoteForServer, useUserVotes, useReportServer, useUserReports } from "@/hooks/useServers";
-import { useDcsServerInfo, extractInviteCode } from "@/hooks/useDcsApi";
+import { extractInviteCode } from "@/hooks/useDcsApi";
 import { useAuth } from "@/hooks/useAuth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -126,7 +126,6 @@ export default function ServerLanding() {
   });
 
   const inviteCode = server?.dcs_short_code || (server?.invite_link ? extractInviteCode(server.invite_link) : null);
-  const { data: dcsInfo } = useDcsServerInfo(server?.invite_link ? extractInviteCode(server.invite_link) : null);
 
   const hasVoted = userVotes.includes(server?.id || "");
   const hasReported = userReports.includes(server?.id || "");
@@ -188,11 +187,9 @@ export default function ServerLanding() {
   }
 
   const ratingConfig = ageRatingConfig[server.age_rating];
-  const memberCount = dcsInfo?.memberCount || server.member_count;
-  const onlineCount = dcsInfo?.onlineCount || server.online_count || 0;
-  const avatarUrl = dcsInfo?.icon || server.avatar_url;
-  const inviterId = dcsInfo?.inviterId;
-  const inviterName = dcsInfo?.inviterName;
+  const memberCount = server.member_count;
+  const onlineCount = server.online_count || 0;
+  const avatarUrl = server.avatar_url;
   const dcsLink = server.invite_link;
 
   // Custom styles for fully customized landing pages OR purchased themes
@@ -353,31 +350,6 @@ export default function ServerLanding() {
               ) : null}
             </div>
           </div>
-           
-           {/* Inviter / Owner Infos */}
-          { inviterId && (
-            <div 
-              className="gaming-border p-6 text-center mb-6"
-              style={borderColor ? { borderColor } : undefined}
-            >
-              <h1 className="text-lg text-foreground mb-2">Invite by</h1>
-              <p className="text-sm text-muted-foreground mb-2">Name</p>
-              <code 
-                className="text-lg font-mono px-4 py-2 rounded-lg"
-                style={accentColor ? { color: accentColor, backgroundColor: `${accentColor}15` } : undefined}
-              >
-                {inviterName}
-              </code>
-              <p className="text-sm text-muted-foreground mb-2">Discord ID</p>
-              <code 
-                className="text-lg font-mono px-4 py-2 rounded-lg"
-                style={accentColor ? { color: accentColor, backgroundColor: `${accentColor}15` } : undefined}
-              >
-                {inviterId}
-              </code>
-            </div>
-      
-          )}
 
           {/* DCS.lol Link */}
           {(server.invite_link || inviteCode) && (

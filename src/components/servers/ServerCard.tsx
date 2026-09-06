@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Server, AgeRating, useVoteForServer, useUserVotes, useReportServer, useUserReports } from "@/hooks/useServers";
-import { useDcsServerInfo, extractInviteCode } from "@/hooks/useDcsApi";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -93,9 +92,6 @@ export function ServerCard({ server, index = 0, showActions, showCredits, onEdit
   const voteForServer = useVoteForServer();
   const reportServer = useReportServer();
   
-  // Fetch live data from dcs.lol
-  const discordInviteCode = server.invite_link ? extractInviteCode(server.invite_link) : null;
-  const { data: dcsInfo } = useDcsServerInfo(discordInviteCode);
   
   const hasVoted = userVotes.includes(server.id);
   const hasReported = userReports.includes(server.id);
@@ -103,10 +99,10 @@ export function ServerCard({ server, index = 0, showActions, showCredits, onEdit
   const themeData = themeStyles[server.theme] || themeStyles.default;
   const customCardData = server.has_custom_card ? (server.custom_card_data as CustomCardData) : null;
   
-  // Use DCS data when available, fallback to stored data
-  const memberCount = dcsInfo?.memberCount || server.member_count;
-  const onlineCount = dcsInfo?.onlineCount || server.online_count || 0;
-  const avatarUrl = dcsInfo?.icon || server.avatar_url;
+  // Use stored counts (synced daily) to avoid Discord rate limits
+  const memberCount = server.member_count;
+  const onlineCount = server.online_count || 0;
+  const avatarUrl = server.avatar_url;
   
   // Use DCS short code if available, otherwise fall back to Discord invite code
   const dcsLink = server.invite_link;

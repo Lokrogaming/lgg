@@ -87,11 +87,51 @@ export async function createDcsLink(discordUrl: string, customId?: string): Prom
   }
 }
 
+// Simple client-side queue + cache so we never hammer Discord (429 protection)
+const CACHE_TTL = 15 * 60 * 1000;
+const MIN_GAP_MS = 1500;
+const infoCache = new Map<string, { at: number; data: DcsServerInfo | null }>();
+const inFlight = new Map<string, Promise<DcsServerInfo | null>>();
+let queue: Promise<unknown> = Promise.resolve();
+let cooldownUntil = 0;
+
+function schedule<T>(task: () => Promise<T>): Promise<T> {
+  const run = queue.then(async () => {
+    const wait = Math.max(0, cooldownUntil - Date.now());
+    if (wait) await new Promise((r) => setTimeout(r, wait));
+    return task();
+  });
+  queue = run.then(() => new Promise((r) => setTimeout(r, MIN_GAP_MS)), () => undefined);
+  return run;
+}
+
 export async function fetchDcsServerInfo(inviteCode: string): Promise<DcsServerInfo | null> {
+  const cached = infoCache.get(inviteCode);
+  if (cached && Date.now() - cached.at < CACHE_TTL) return cached.data;
+  const pending = inFlight.get(inviteCode);
+  if (pending) return pending;
+
+  const promise = schedule(() => fetchDcsServerInfoRaw(inviteCode))
+    .then((data) => {
+      infoCache.set(inviteCode, { at: Date.now(), data });
+      return data;
+    })
+    .finally(() => inFlight.delete(inviteCode));
+  inFlight.set(inviteCode, promise);
+  return promise;
+}
+
+async function fetchDcsServerInfoRaw(inviteCode: string): Promise<DcsServerInfo | null> {
   try {
     
     const response = await fetch(`https://discord.com/api/v10/invites/${inviteCode}?with_counts=true`);
-    
+
+    if (response.status === 429) {
+      const retryAfter = Number(response.headers.get("retry-after") ?? "5");
+      cooldownUntil = Date.now() + Math.min(retryAfter * 1000 + 500, 60_000);
+      return null;
+    }
+
     if (!response.ok) return null;
     
     const data = await response.json();
@@ -139,7 +179,10 @@ export function useDcsServerInfo(inviteCode: string | null) {
       return fetchDcsServerInfo(inviteCode);
     },
     enabled: !!inviteCode,
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    retry: false,
+    refetchOnWindowFocus: false,
+    staleTime: 15 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 }
 

@@ -1,4 +1,5 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface DcsServerInfo {
   name: string;
@@ -87,23 +88,10 @@ export async function createDcsLink(discordUrl: string, customId?: string): Prom
   }
 }
 
-// Simple client-side queue + cache so we never hammer Discord (429 protection)
+// Client-side deduplication for the manual create/edit lookup.
 const CACHE_TTL = 15 * 60 * 1000;
-const MIN_GAP_MS = 1500;
 const infoCache = new Map<string, { at: number; data: DcsServerInfo | null }>();
 const inFlight = new Map<string, Promise<DcsServerInfo | null>>();
-let queue: Promise<unknown> = Promise.resolve();
-let cooldownUntil = 0;
-
-function schedule<T>(task: () => Promise<T>): Promise<T> {
-  const run = queue.then(async () => {
-    const wait = Math.max(0, cooldownUntil - Date.now());
-    if (wait) await new Promise((r) => setTimeout(r, wait));
-    return task();
-  });
-  queue = run.then(() => new Promise((r) => setTimeout(r, MIN_GAP_MS)), () => undefined);
-  return run;
-}
 
 export async function fetchDcsServerInfo(inviteCode: string): Promise<DcsServerInfo | null> {
   const cached = infoCache.get(inviteCode);
@@ -111,7 +99,7 @@ export async function fetchDcsServerInfo(inviteCode: string): Promise<DcsServerI
   const pending = inFlight.get(inviteCode);
   if (pending) return pending;
 
-  const promise = schedule(() => fetchDcsServerInfoRaw(inviteCode))
+  const promise = fetchDcsServerInfoRaw(inviteCode)
     .then((data) => {
       infoCache.set(inviteCode, { at: Date.now(), data });
       return data;
@@ -123,23 +111,12 @@ export async function fetchDcsServerInfo(inviteCode: string): Promise<DcsServerI
 
 async function fetchDcsServerInfoRaw(inviteCode: string): Promise<DcsServerInfo | null> {
   try {
-    
-    const response = await fetch(`https://discord.com/api/v10/invites/${inviteCode}?with_counts=true`);
+    const { data, error } = await supabase.functions.invoke("discord-invite-info", {
+      body: { inviteCode },
+    });
+    if (error || !data) return null;
 
-    if (response.status === 429) {
-      const retryAfter = Number(response.headers.get("retry-after") ?? "5");
-      cooldownUntil = Date.now() + Math.min(retryAfter * 1000 + 500, 60_000);
-      return null;
-    }
-
-    if (!response.ok) return null;
-    
-    const data = await response.json();
-    
-    
     const guild = data.guild;
-    
-    
     return {
       name: guild?.name || "",
       description: guild?.description || data.profile?.description || "",
@@ -173,12 +150,13 @@ banner: guild?.banner
 
 export function useDcsServerInfo(inviteCode: string | null) {
   return useQuery({
-  queryKey: ["dcs-server-info", inviteCode],
+    queryKey: ["dcs-server-info", inviteCode],
     queryFn: async () => {
       if (!inviteCode) return null;
       return fetchDcsServerInfo(inviteCode);
     },
-    enabled: !!inviteCode,
+    // Server cards and pages use daily stored counts. Lookups are manual only.
+    enabled: false,
     retry: false,
     refetchOnWindowFocus: false,
     staleTime: 15 * 60 * 1000,

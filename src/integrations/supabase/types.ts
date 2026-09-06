@@ -112,6 +112,41 @@ export type Database = {
           },
         ]
       }
+      server_member_stats: {
+        Row: {
+          created_at: string
+          id: string
+          member_count: number
+          online_count: number
+          recorded_on: string
+          server_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          member_count?: number
+          online_count?: number
+          recorded_on?: string
+          server_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          member_count?: number
+          online_count?: number
+          recorded_on?: string
+          server_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "server_member_stats_server_id_fkey"
+            columns: ["server_id"]
+            isOneToOne: false
+            referencedRelation: "servers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       server_reports: {
         Row: {
           created_at: string
@@ -196,7 +231,9 @@ export type Database = {
           is_promoted: boolean | null
           is_verified: boolean | null
           landing_link: string | null
+          last_milestone_notified: number
           member_count: number | null
+          member_count_synced_at: string | null
           milestone_threshold: number | null
           name: string
           online_count: number | null
@@ -229,7 +266,9 @@ export type Database = {
           is_promoted?: boolean | null
           is_verified?: boolean | null
           landing_link?: string | null
+          last_milestone_notified?: number
           member_count?: number | null
+          member_count_synced_at?: string | null
           milestone_threshold?: number | null
           name: string
           online_count?: number | null
@@ -262,7 +301,9 @@ export type Database = {
           is_promoted?: boolean | null
           is_verified?: boolean | null
           landing_link?: string | null
+          last_milestone_notified?: number
           member_count?: number | null
+          member_count_synced_at?: string | null
           milestone_threshold?: number | null
           name?: string
           online_count?: number | null

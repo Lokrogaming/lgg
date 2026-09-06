@@ -8,3 +8,7 @@ verify_jwt = false
 
 [functions.api]
 verify_jwt = false
+
+[functions.sync-member-counts]
+verify_jwt = false
+

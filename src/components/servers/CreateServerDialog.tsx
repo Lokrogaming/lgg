@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -52,19 +52,6 @@ export function CreateServerDialog({ open, onOpenChange, onSuccess }: CreateServ
   const [serverInfoFetched, setServerInfoFetched] = useState(false);
 
   const createServer = useCreateServer();
-
-  // Auto-fetch server info when discord invite link changes
-  useEffect(() => {
-    const code = extractInviteCode(discordInviteLink);
-    if (code && code.length >= 4) {
-      const timer = setTimeout(() => {
-        handleFetchFromDiscord();
-      }, 1000);
-      return () => clearTimeout(timer);
-    } else {
-      setServerInfoFetched(false);
-    }
-  }, [discordInviteLink]);
 
   const handleFetchFromDiscord = async () => {
     const code = extractInviteCode(discordInviteLink);

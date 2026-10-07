@@ -50,6 +50,8 @@ interface ThemeData {
   borderColor?: string;
   fontFamily?: string;
   accentColor?: string;
+  textColor?: string;
+  mutedColor?: string;
 }
 
 const themeStyles: Record<string, ThemeData> = {
@@ -110,7 +112,7 @@ export default function ServerLanding() {
       const base = supabase.from("servers").select("*");
       const { data, error } = await (serverId
         ? base.eq("id", serverId)
-        : base.eq("landing_link", slug!)
+        : base.eq("landing_link", slug || "")
       ).maybeSingle();
 
       if (error) throw error;
@@ -135,7 +137,8 @@ export default function ServerLanding() {
   const hasCustomLanding = server?.has_custom_landing && customData;
   
   // Get theme data (purchased themes like neon, gold, galaxy)
-  const themeData = themeStyles[server?.theme || "default"] || themeStyles.default;
+  const savedTheme = useShopTheme(server?.theme);
+  const themeData = { ...(themeStyles[server?.theme || "default"] || themeStyles.default), ...savedTheme };
   const hasTheme = server?.theme && server.theme !== "default";
 
   const handleVote = () => {
@@ -204,6 +207,7 @@ export default function ServerLanding() {
   } : hasTheme ? {
     background: themeData.background,
     fontFamily: themeData.fontFamily,
+    color: themeData.textColor,
   } : {};
 
   // Accent color for themed elements
@@ -303,7 +307,7 @@ export default function ServerLanding() {
 
             {/* Description */}
             {server.description && (
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8" style={!hasCustomLanding ? { color: themeData.mutedColor } : undefined}>
                 {server.description}
               </p>
             )}

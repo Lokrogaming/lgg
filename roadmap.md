@@ -4,6 +4,6 @@
 - [x] Verify theme previews and shop loading.
 
 # Owner credits
-- [ ] Add balances per server and purchase history with server filtering.
-- [ ] Record purchase costs without treating owner grants as spending.
-- [ ] Add navigation and verify the signed-in page.
+- [x] Add balances per server and purchase history with server filtering.
+- [x] Record purchase costs without treating owner grants as spending.
+- [x] Add navigation and verify the signed-in page.

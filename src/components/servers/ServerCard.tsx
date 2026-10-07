@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { ReportDialog } from "./ReportDialog";
+import { useShopTheme } from "@/hooks/useShop";
 
 interface ServerCardProps {
   server: Server;
@@ -31,6 +32,8 @@ interface ThemeData {
   borderColor?: string;
   fontFamily?: string;
   accentColor?: string;
+  textColor?: string;
+  mutedColor?: string;
 }
 
 interface CustomCardData {
@@ -96,7 +99,8 @@ export function ServerCard({ server, index = 0, showActions, showCredits, onEdit
   const hasVoted = userVotes.includes(server.id);
   const hasReported = userReports.includes(server.id);
   const isBlocked = server.is_blocked;
-  const themeData = themeStyles[server.theme] || themeStyles.default;
+  const savedTheme = useShopTheme(server.theme);
+  const themeData = { ...(themeStyles[server.theme] || themeStyles.default), ...savedTheme };
   const customCardData = server.has_custom_card ? (server.custom_card_data as CustomCardData) : null;
   
   // Use stored counts (synced daily) to avoid Discord rate limits
@@ -151,6 +155,7 @@ export function ServerCard({ server, index = 0, showActions, showCredits, onEdit
     background: themeData.background,
     borderColor: themeData.borderColor,
     fontFamily: themeData.fontFamily,
+    color: themeData.textColor,
   } : {};
 
   return (
@@ -216,7 +221,7 @@ export function ServerCard({ server, index = 0, showActions, showCredits, onEdit
             )}
           </div>
           
-          <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+          <p className="text-sm text-muted-foreground line-clamp-2 mb-3" style={!customCardData ? { color: themeData.mutedColor } : undefined}>
             {server.description || "No description provided"}
           </p>
           

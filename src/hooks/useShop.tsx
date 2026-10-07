@@ -39,6 +39,34 @@ export function useShopItems() {
   });
 }
 
+// Shared cached catalog also includes hidden themes already owned by servers.
+export function useShopTheme(themeKey: string | undefined) {
+  const { data: themes = [] } = useQuery({
+    queryKey: ["shop-theme-styles"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("shop_items")
+        .select("name, theme_data")
+        .eq("type", "theme");
+      if (error) throw error;
+      return data;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+  const theme = themes.find(item =>
+    item.name.toLowerCase().replace(" theme", "").replace(/\s+/g, "-") === themeKey
+  );
+  const raw = theme?.theme_data;
+  const styles: Record<string, string> = {};
+  if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+    for (const key of ["background", "borderColor", "fontFamily", "accentColor", "textColor", "mutedColor"]) {
+      const value = raw[key];
+      if (typeof value === "string" && value.trim()) styles[key] = value;
+    }
+  }
+  return styles;
+}
+
 export function usePurchaseItem() {
   const queryClient = useQueryClient();
 

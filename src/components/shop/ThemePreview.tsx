@@ -1,9 +1,9 @@
-import { Badge } from "@/components/ui/badge";
 import { Users, ThumbsUp, Shield, Wifi } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface ThemePreviewProps {
   themeName: string;
+  themeData?: Record<string, unknown> | null;
 }
 
 interface ThemeData {
@@ -74,14 +74,17 @@ const themeStyles: Record<string, ThemeData> = {
   },
 };
 
-export function ThemePreview({ themeName }: ThemePreviewProps) {
+export function ThemePreview({ themeName, themeData }: ThemePreviewProps) {
   const themeKey = themeName.toLowerCase().replace(" theme", "").replace(/\s+/g, "-");
-  const theme = themeStyles[themeKey];
-
-  if (!theme) return null;
+  const fallback = themeStyles[themeKey] || themeStyles.default;
+  const theme = { ...fallback };
+  for (const key of Object.keys(fallback) as (keyof ThemeData)[]) {
+    const value = themeData?.[key];
+    if (typeof value === "string" && value.trim()) theme[key] = value;
+  }
 
   return (
-    <div className="mt-4 mb-2">
+    <div className="mt-4 mb-4" aria-label={`${themeName} preview`}>
       <p className="text-xs text-muted-foreground mb-2">Preview:</p>
       <div
         className="rounded-lg p-4 border-2 transition-all"
@@ -89,7 +92,7 @@ export function ThemePreview({ themeName }: ThemePreviewProps) {
           background: theme.background,
           borderColor: theme.borderColor,
           fontFamily: theme.fontFamily,
-          boxShadow: `0 0 20px ${theme.accentColor}30`,
+          boxShadow: `0 0 20px color-mix(in srgb, ${theme.accentColor} 19%, transparent)`,
         }}
       >
         <div className="flex items-start gap-3">
@@ -99,7 +102,7 @@ export function ThemePreview({ themeName }: ThemePreviewProps) {
           >
             <AvatarFallback
               className="rounded-lg text-sm font-bold"
-              style={{ backgroundColor: `${theme.accentColor}30`, color: theme.accentColor }}
+              style={{ backgroundColor: `color-mix(in srgb, ${theme.accentColor} 19%, transparent)`, color: theme.accentColor }}
             >
               S
             </AvatarFallback>
@@ -128,7 +131,7 @@ export function ThemePreview({ themeName }: ThemePreviewProps) {
                 <Users className="h-3 w-3" />
                 <span>1,234</span>
               </div>
-              <div className="flex items-center gap-1" style={{ color: "#22c55e" }}>
+              <div className="flex items-center gap-1 text-success">
                 <Wifi className="h-3 w-3" />
                 <span>567</span>
               </div>

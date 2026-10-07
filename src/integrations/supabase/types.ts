@@ -43,6 +43,7 @@ export type Database = {
       }
       purchases: {
         Row: {
+          credits_spent: number | null
           expires_at: string | null
           id: string
           is_active: boolean | null
@@ -51,6 +52,7 @@ export type Database = {
           server_id: string
         }
         Insert: {
+          credits_spent?: number | null
           expires_at?: string | null
           id?: string
           is_active?: boolean | null
@@ -59,6 +61,7 @@ export type Database = {
           server_id: string
         }
         Update: {
+          credits_spent?: number | null
           expires_at?: string | null
           id?: string
           is_active?: boolean | null

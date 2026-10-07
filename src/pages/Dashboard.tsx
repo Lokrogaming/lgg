@@ -73,7 +73,7 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
-            <div className="gaming-border p-4">
+            <Link to="/credits" className="gaming-border p-4 hover:glow-primary transition-all" aria-label="View credit balances">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-warning/20">
                   <Coins className="h-5 w-5 text-warning" />
@@ -83,7 +83,7 @@ export default function Dashboard() {
                   <p className="text-2xl font-bold">{totalCredits}</p>
                 </div>
               </div>
-            </div>
+            </Link>
             <Link to="/shop" className="gaming-border p-4 hover:glow-primary transition-all group">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-success/20">

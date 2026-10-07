@@ -9,7 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, Settings, LayoutDashboard, Crown, Menu, X, ShoppingBag } from "lucide-react";
+import { LogOut, Settings, LayoutDashboard, Crown, Menu, X, ShoppingBag, Coins } from "lucide-react";
 import lggLogo from "@/assets/lgg-logo.jpeg";
 import { useState } from "react";
 
@@ -109,6 +109,10 @@ export function Header() {
                   <ShoppingBag className="mr-2 h-4 w-4" />
                   Shop
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/credits")}>
+                  <Coins className="mr-2 h-4 w-4" />
+                  Credits
+                </DropdownMenuItem>
                 {isSiteOwner && (
                   <DropdownMenuItem onClick={() => navigate("/admin")}>
                     <Crown className="mr-2 h-4 w-4" />
@@ -189,6 +193,10 @@ export function Header() {
       onClick={() => setMobileMenuOpen(false)}
     >
       Dashboard
+    </Link>
+
+    <Link to="/credits" className="px-4 py-2 rounded-lg hover:bg-secondary transition-colors flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
+      <Coins className="h-4 w-4" />Credits
     </Link>
 
     <Button 

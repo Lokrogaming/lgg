@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import Admin from "./pages/Admin";
 import Settings from "./pages/Settings";
 import Shop from "./pages/Shop";
+import Credits from "./pages/Credits";
 import ServerLanding from "./pages/ServerLanding";
 import Announcements from "./pages/Announcements"
 import Partners from "./pages/Partners"
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/admin" element={<Admin />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/shop" element={<Shop />} />
+            <Route path="/credits" element={<Credits />} />
             <Route path="/announcements" element={<Announcements />} />
             <Route path="/partners" element={<Partners />} />
             <Route path="/server/:serverId" element={<ServerLanding />} />

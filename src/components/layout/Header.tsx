@@ -9,7 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, Settings, LayoutDashboard, Crown, Menu, X, ShoppingBag } from "lucide-react";
+import { LogOut, Settings, LayoutDashboard, Crown, Menu, X, ShoppingBag, Coins } from "lucide-react";
 import lggLogo from "@/assets/lgg-logo.jpeg";
 import { useState } from "react";
 

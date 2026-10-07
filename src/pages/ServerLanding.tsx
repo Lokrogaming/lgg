@@ -25,6 +25,7 @@ import {
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { ReportDialog } from "@/components/servers/ReportDialog";
+import { useShopTheme } from "@/hooks/useShop";
 
 const ageRatingConfig: Record<AgeRating, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; className?: string }> = {
   all_ages: { label: "All Ages", variant: "secondary" },

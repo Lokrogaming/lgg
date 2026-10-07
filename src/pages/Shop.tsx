@@ -121,7 +121,7 @@ export default function Shop() {
               {shopItems.map((item, index) => (
                 <div 
                   key={item.id}
-                  className="gaming-border p-6 hover:glow-primary transition-all duration-300 animate-fade-in group"
+                  className="gaming-border p-6 flex flex-col min-w-0 hover:glow-primary transition-all duration-300 animate-fade-in group"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <div className={cn(
@@ -155,10 +155,10 @@ export default function Shop() {
 
                   {/* Theme Preview */}
                   {item.type === "theme" && (
-                    <ThemePreview themeName={item.name} />
+                    <ThemePreview themeName={item.name} themeData={item.theme_data} />
                   )}
 
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between gap-3 mt-auto">
                     <div className="flex items-center gap-1 text-xl font-bold text-warning">
                       <Coins className="h-5 w-5" />
                       {item.price}

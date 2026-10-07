@@ -153,6 +153,7 @@ export function usePurchaseItem() {
       queryClient.invalidateQueries({ queryKey: ["servers"] });
       queryClient.invalidateQueries({ queryKey: ["my-servers"] });
       toast.success(`Purchased ${data.item.name}!`);
+      queryClient.invalidateQueries({ queryKey: ["credit-history"] });
     },
     onError: (error) => {
       toast.error(error.message);
